@@ -1,1 +1,54 @@
 
+= mill-aspect - AspectJ compiler/weaver support for mill
+:version: 0.0.1
+:aspectjVersion: 1.8.10
+
+== Quickstart
+
+== Configuration
+
+Your module needs to extend `de.tobiasroeser.mill.aspectj.AspectjModule` which itself extends `JavaModule`.
+
+The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following configuration options (over those from `JavaModule`).
+
+* `def aspectjVersion: T[String]` - The AspectJ version.
+
+* `def ivyDeps: T[Agg[Dep]]` - The compile and runtime dependencies.
+Contains by default the `aspectjrt.jar` which is resolved via ivy (`ivy"org.aspectj:aspectjrt:${aspectjVersion()}"`).
+If you do do not use `super.ivyDeps()` when overriding this def, you need to provide the `aspectjrt.jar` manually.
+
+* `def aspectjToolsDeps: T[Agg[Dep]]` - The ivy dependencies representing the aspectj compiler classes, which is typically a `aspectjtools.jar`.
+Default to `ivy"org.aspectj:aspectjtools:${aspectjVersion()}"`.
+
+* `def aspectjToolsClasspath: T[Agg[PathRef]]` - The aspectj compiler classpath.
+By default resolved from `aspectjToolsDeps`.
+
+* `def ajcOptions: T[Seq[String]]` - Additional options to be used by `ajc` in the `compile` target.
+
+* `def aspectPath: T[Agg[PathRef]]` - Additional classes, JARs or ZIPs to be used as aspect path (`ajc -aspectpath`).
+In most cases it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
+
+* `def aspectModuleDeps: Seq[JavaModule]` - List of modules to be used as aspect path (`ajc -aspectpath`).
+
+* `def aspectIvyDeps: T[Agg[Dep]]` - List of ivy dependencies to be used as aspect path (`ajc -aspectpath`).
+
+* `def effectiveAspectPath: T[Seq[PathRef]]` - Effective aspect path (`ajc -inpath`).
+In most cases, it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
+
+* `def weavePath: T[Seq[PathRef]]`- List of directories with `.class` files to weave (into target directory).
+Corresponds to `ajc -inpath` option.
+
+* `def compile: T[CompilationResult]` - Compiles the source code with the ajc compiler.
+
+
+== License
+
+Apache License, version 2
+
+== Supporters
+
+Thanks to iba Consulting Gesellschaft mbH & Co KG for the initial development support.
+
+== Changelog
+
+No releases yet.
