@@ -47,7 +47,7 @@ Apache License, version 2
 
 == Supporters
 
-Thanks to iba Consulting Gesellschaft mbH & Co KG for the initial development support.
+Thanks to https://iba-cg.de/[iba Consulting Gesellschaft mbH & Co KG] for the initial development support.
 
 == Changelog
 
