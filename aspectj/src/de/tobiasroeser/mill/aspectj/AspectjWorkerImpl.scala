@@ -48,7 +48,7 @@ class AspectjWorkerImpl(toolsClasspath: Seq[Path]) extends AspectjWorker {
     os.makeDir.all(classesDir)
 
     def asOptionalPath(name: String, paths: Seq[Path], filterExisting: Boolean = true): Seq[String] = {
-      ctx.log.debug(s"unfiltered ${name}: ${paths.map(_.toIO.getPath())}")
+      ctx.log.debug(s"unfiltered ${name}: ${paths.map(_.toIO.getPath()).mkString("\n  ", "\n  ", "")}")
       val ps = if(filterExisting) paths.filter(os.exists) else paths
       if(ps.isEmpty) Seq()
       else Seq(name, ps.map(_.toIO.getPath()).mkString(File.pathSeparator))

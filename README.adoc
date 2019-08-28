@@ -1,7 +1,11 @@
 
-= mill-aspect - AspectJ compiler/weaver support for mill
+= mill-aspectj - AspectJ compiler/weaver support for mill
 :version: 0.0.1
 :aspectjVersion: 1.8.10
+:toc:
+:toc-placement: preamble
+
+Documentation for mill-aspectj, a mill plugin to support the AspectJ compiler.
 
 == Quickstart
 
@@ -40,6 +44,7 @@ Corresponds to `ajc -inpath` option.
 
 * `def compile: T[CompilationResult]` - Compiles the source code with the ajc compiler.
 
+* `def ajcHelp: Command[Unit]` - Shows the help of the AspectJ compiler (`ajc -help`).
 
 == License
 

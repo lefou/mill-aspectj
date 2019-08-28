@@ -53,13 +53,17 @@ trait AspectjModule extends JavaModule {
   /**
    * Additional options to be used by `ajc` in the `compile` target.
    */
-  def ajcOptions: T[Seq[String]] = T { Seq[String]() }
+  def ajcOptions: T[Seq[String]] = T {
+    Seq[String]()
+  }
 
   /**
    * Additional classes, JARs or ZIPs to be used as aspect path (`ajc -aspectpath`).
    * In most cases it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
    */
-  def aspectPath: T[Agg[PathRef]] = T { Agg[PathRef]() }
+  def aspectPath: T[Agg[PathRef]] = T {
+    Agg[PathRef]()
+  }
 
   /**
    * List of modules to be used as aspect path (`ajc -aspectpath`).
@@ -69,7 +73,9 @@ trait AspectjModule extends JavaModule {
   /**
    * List of ivy dependencies to be used as aspect path (`ajc -aspectpath`).
    */
-  def aspectIvyDeps: T[Agg[Dep]] = T { Agg.empty[Dep] }
+  def aspectIvyDeps: T[Agg[Dep]] = T {
+    Agg.empty[Dep]
+  }
 
   /**
    * Effective aspect path (`ajc -inpath`).
@@ -85,7 +91,9 @@ trait AspectjModule extends JavaModule {
    * List of directories with `.class` files to weave (into target directory).
    * Corresponds to `ajc -inpath` option.
    */
-  def weavePath: T[Seq[PathRef]] = T { Seq[PathRef]() }
+  def weavePath: T[Seq[PathRef]] = T {
+    Seq[PathRef]()
+  }
 
   /**
    * Compiles the source code with the ajc compiler.
@@ -98,6 +106,21 @@ trait AspectjModule extends JavaModule {
       aspectPath = effectiveAspectPath().toSeq.map(_.path),
       inPath = weavePath().map(_.path)
     )(T.ctx())
+  }
+
+  /**
+   * Shows the help of the AspectJ compiler (`ajc -help`).
+   */
+  def ajcHelp() = T.command {
+    aspectjWorker().compile(
+      classpath = aspectjToolsClasspath().toSeq.map(_.path),
+      sourceDirs = Seq(),
+      options = Seq("-help"),
+      aspectPath = Seq(),
+      inPath = Seq()
+    )
+    println()
+    ()
   }
 
 }
