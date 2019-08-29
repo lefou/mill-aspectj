@@ -1,21 +1,43 @@
 
-= mill-aspectj - AspectJ compiler/weaver support for mill
-:version: 0.0.1
-:aspectjVersion: 1.8.10
+= mill-aspectj - AspectJ compiler support for mill
+:version: SNAPSHOT
+:aspectjVersion: 1.9.4
 :toc:
 :toc-placement: preamble
 
-Documentation for mill-aspectj, a mill plugin to support the AspectJ compiler.
+Documentation for mill-aspectj, a mill plugin to support the https://projects.eclipse.org/projects/tools.aspectj[AspectJ language and compiler].
 
 == Quickstart
 
+[source,scala,subs="attributes,verbatim"]
+----
+import mill._
+import mill.scalalib._
+import mill.define._
+
+// Load the plugin from Maven Central via ivy/coursier
+import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj:{version}`, de.tobiasroeser.mill.aspectj._
+
+object main extends AspectjModule {
+
+  // Select the AspectJ version
+  def aspectjVersion = T{ "{aspectjVersion}" }
+
+  // Set AspectJ options, e.g. the language level and annotation processor
+  // Run `mill main.ajcHelp` to get a list of supported options
+  def ajcOptions = Seq("-8", "-proc:none")
+
+}
+----
+
 == Configuration
 
-Your module needs to extend `de.tobiasroeser.mill.aspectj.AspectjModule` which itself extends `JavaModule`.
+Your module needs to extend `de.tobiasroeser.mill.aspectj.AspectjModule` which itself extends `mill.scalalib.JavaModule`.
 
-The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following configuration options (over those from `JavaModule`).
+The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following configuration options (over those from `mill.scalalib.JavaModule`).
 
-* `def aspectjVersion: T[String]` - The AspectJ version.
+* `def aspectjVersion: T[String]` - The AspectJ version. _Required_.
+For a list of available releases refer to the https://www.eclipse.org/aspectj/downloads.php[AspectJ Download Page].
 
 * `def ivyDeps: T[Agg[Dep]]` - The compile and runtime dependencies.
 Contains by default the `aspectjrt.jar` which is resolved via ivy (`ivy"org.aspectj:aspectjrt:${aspectjVersion()}"`).
