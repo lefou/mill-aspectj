@@ -1,6 +1,6 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: SNAPSHOT
+:version: 0.1.0
 :aspectjVersion: 1.9.4
 :toc:
 :toc-placement: preamble
@@ -78,4 +78,6 @@ Thanks to https://iba-cg.de/[iba Consulting Gesellschaft mbH & Co KG] for the in
 
 == Changelog
 
-No releases yet.
+=== mill-aspectj 0.1.0 - 2019-08-30
+
+* Initial public release
