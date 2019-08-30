@@ -31,7 +31,7 @@ trait MillAjcModule extends ScalaModule with PublishModule {
 
   def pomSettings = T {
     PomSettings(
-      description = "AspectJ compiler/weaver support for mill",
+      description = "AspectJ compiler support for mill",
       organization = "de.tototec",
       url = "https://github.com/lefou/mill-aspectj",
       licenses = Seq(License.`Apache-2.0`),

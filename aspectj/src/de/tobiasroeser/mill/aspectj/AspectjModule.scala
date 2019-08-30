@@ -78,12 +78,19 @@ trait AspectjModule extends JavaModule {
   }
 
   /**
+   * Resolved version of `aspectIvyDeps`.
+   */
+  def resolvedAspectIvyDeps: T[Agg[PathRef]] = T {
+    resolveDeps(aspectIvyDeps, false)()
+  }
+
+  /**
    * Effective aspect path (`ajc -inpath`).
-   * In most cases, it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
+   * In most cases, it is enough to use `aspectModuleDeps` and `resolvedAspectIvyDeps`.
    */
   def effectiveAspectPath: T[Seq[PathRef]] = T {
     Task.traverse(aspectModuleDeps)(_.localClasspath)().flatten ++
-      resolveDeps(aspectIvyDeps, false)() ++
+      resolvedAspectIvyDeps() ++
       aspectPath()
   }
 
