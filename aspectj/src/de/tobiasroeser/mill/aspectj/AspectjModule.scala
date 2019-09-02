@@ -15,6 +15,7 @@ import java.{lang => jl}
 import mill.api.Loose
 
 trait AspectjModule extends JavaModule {
+  def aspectjWorkerModule: AspectjWorkerModule = AspectjWorkerModule
 
   /**
    * The AspectJ version.
@@ -47,7 +48,8 @@ trait AspectjModule extends JavaModule {
   }
 
   def aspectjWorker: Worker[AspectjWorker] = T.worker {
-    new AspectjWorkerImpl(aspectjToolsClasspath().toSeq.map(_.path))
+    // new AspectjWorkerImpl(aspectjToolsClasspath().toSeq.map(_.path))
+    aspectjWorkerModule.aspectjWorkerManager().get(aspectjToolsClasspath().toSeq)
   }
 
   /**
