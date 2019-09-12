@@ -2,12 +2,15 @@
 = mill-aspectj - AspectJ compiler support for mill
 :version: 0.1.0
 :aspectjVersion: 1.9.4
+:mill-version: 0.5.1
 :toc:
 :toc-placement: preamble
 
 Documentation for mill-aspectj, a mill plugin to support the https://projects.eclipse.org/projects/tools.aspectj[AspectJ language and compiler].
 
 == Quickstart
+
+Mill version {mill-version} or newer is required.
 
 [source,scala,subs="attributes,verbatim"]
 ----
