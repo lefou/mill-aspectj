@@ -6,11 +6,12 @@ import scala.reflect.internal.util.ScalaClassLoader.URLClassLoader
 
 import mill._
 import mill.api.Ctx.{Dest, Log}
-import mill.define.{Target, Task, Worker}
-import mill.scalalib.{Dep, DepSyntax, JavaModule}
+import mill.define.{Command, Target, Task, Worker}
+import mill.scalalib.{Dep, DepSyntax, GenIdeaImpl, JavaModule}
 import mill.scalalib.api.CompilationResult
 import os.Path
 import java.{lang => jl}
+import mill.scalalib.GenIdeaModule.{JavaFacet, Element, IdeaConfigFile}
 
 import mill.api.Loose
 
@@ -134,3 +135,64 @@ trait AspectjModule extends JavaModule {
 
 }
 
+trait AspectjIdeaSupport extends AspectjModule {
+  // Experimental support for Aspectj compiler config
+  override def ideaConfigFiles(ideaConfigVersion: Int): Command[Seq[IdeaConfigFile]] = T.command {
+    ideaConfigVersion match {
+      case 4 =>
+        aspectjToolsClasspath().toIndexedSeq match {
+          case IndexedSeq() =>
+            Seq()
+          case toolsPath =>
+            Seq(
+              IdeaConfigFile(
+                name = "compiler.xml",
+                component = "AjcSettings",
+                config = Seq(Element("option", Map("name" -> "ajcPath", "value" -> toolsPath.head.path.toIO.getPath())))
+              ),
+              IdeaConfigFile(
+                name = "compiler.xml",
+                component = "CompilerConfiguration",
+                config = Seq(Element("option", Map("name" -> "DEFAULT_COMPILER", "value" -> "ajc")))
+              )
+            )
+        }
+      case v =>
+        T.ctx().log.error(s"Unsupported Idea config version ${v}")
+        Seq()
+
+    }
+  }
+
+  // experimental support for AspectJ facets
+  override def ideaJavaModuleFacets(ideaConfigVersion: Int): Command[Seq[JavaFacet]] = T.command {
+    ideaConfigVersion match {
+      case 4 =>
+        val aspectPath =
+          resolvedAspectIvyDeps().toSeq.map { depPathRef =>
+            Element("projectLibrary", childs = Seq(
+              Element("option", Map("name" -> "name", "value" -> depPathRef.path.last))
+            ))
+          } ++ aspectModuleDeps.map { module =>
+            Element("module", childs = Seq(
+              Element("option", Map("name" -> "name", "value" -> GenIdeaImpl.moduleName(module.millModuleSegments)))
+            ))
+          }
+
+        Seq(
+          JavaFacet("AspectJ", "AspectJ", config =
+            Element("configuration", childs = if(aspectPath.isEmpty) Seq() else Seq(
+              Element(
+                "option",
+                attributes = Map("name" -> "aspectPath"),
+                childs = aspectPath
+              )
+            ))
+          )
+        )
+      case v =>
+        T.ctx().log.error(s"Unsupported Idea config version ${v}")
+        Seq()
+    }
+  }
+}
