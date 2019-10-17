@@ -39,7 +39,7 @@ class AspectjInJvmWorker(toolsClasspath: Seq[Path]) extends AspectjApi {
     options: Seq[String],
     aspectPath: Seq[Path],
     inPath: Seq[Path]
-  )(implicit ctx: Ctx): CompilationResult = {
+  )(implicit ctx: Ctx): CompilationResult = synchronized {
     val dest = ctx.dest
     ctx.log.debug(s"Destination: ${dest}")
     val cache = this.cache
