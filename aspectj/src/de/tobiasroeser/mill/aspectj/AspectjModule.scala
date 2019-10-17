@@ -48,7 +48,7 @@ trait AspectjModule extends JavaModule {
     resolveDeps(aspectjToolsDeps)
   }
 
-  def aspectjWorker: Worker[AspectjWorker] = T.worker {
+  def aspectjWorker: Worker[AspectjApi] = T.worker {
     // new AspectjWorkerImpl(aspectjToolsClasspath().toSeq.map(_.path))
     aspectjWorkerModule.aspectjWorkerManager().get(aspectjToolsClasspath().toSeq)
   }
@@ -121,11 +121,11 @@ trait AspectjModule extends JavaModule {
   /**
    * Shows the help of the AspectJ compiler (`ajc -help`).
    */
-  def ajcHelp() = T.command {
+  def ajcHelp(extraArgs: String*) = T.command {
     aspectjWorker().compile(
       classpath = aspectjToolsClasspath().toSeq.map(_.path),
       sourceDirs = Seq(),
-      options = Seq("-help"),
+      options = Seq("-help") ++ extraArgs,
       aspectPath = Seq(),
       inPath = Seq()
     )

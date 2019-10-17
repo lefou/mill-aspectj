@@ -13,7 +13,7 @@ import mill.api.Ctx
 import mill.scalalib.api.CompilationResult
 import os.Path
 
-class AspectjWorkerImpl(toolsClasspath: Seq[Path]) extends AspectjWorker {
+class AspectjInJvmWorker(toolsClasspath: Seq[Path]) extends AspectjApi {
 
   class CachedTool()(implicit ctx: Ctx) {
     ctx.log.debug(s"Creating Classloader with classpath: [${toolsClasspath}]")
@@ -47,13 +47,13 @@ class AspectjWorkerImpl(toolsClasspath: Seq[Path]) extends AspectjWorker {
     val classesDir = dest / "classes"
     os.makeDir.all(classesDir)
 
-    val (javaCount, ajCount) = sourceDirs.foldLeft(0 -> 0) { (count, d) =>
+    val (javaCount, ajCount) = sourceDirs.filter(os.isDir).foldLeft(0 -> 0) { (count, d) =>
       val files = os.walk(d).filter(os.isFile)
       val java = files.count(_.ext.equalsIgnoreCase("java"))
       val aspect = files.count(_.ext.equalsIgnoreCase("aj"))
       (count._1 + java, count._2 + aspect)
     }
-    ctx.log.info(s"Compiling ${javaCount} Java sources and ${ajCount} AspectJ sources to ${dest.toIO.getPath()} ...")
+    println(s"Compiling ${javaCount} Java sources and ${ajCount} AspectJ sources to ${dest.toIO.getPath()} ...")
 
     def asOptionalPath(name: String, paths: Seq[Path], filterExisting: Boolean = true): Seq[String] = {
       ctx.log.debug(s"unfiltered ${name}: ${paths.map(_.toIO.getPath()).mkString("\n  ", "\n  ", "")}")

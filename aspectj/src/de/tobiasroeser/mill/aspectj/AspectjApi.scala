@@ -4,7 +4,7 @@ import mill.api.Ctx
 import mill.scalalib.api.CompilationResult
 import os.Path
 
-trait AspectjWorker {
+trait AspectjApi {
   def compile(
     classpath: Seq[Path],
     sourceDirs: Seq[Path],
