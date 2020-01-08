@@ -7,13 +7,13 @@ import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.1.0`, de.tobiasr
 
 
 object Deps {
-  def millVersion = "0.5.1"
-  def scalaVersion = "2.12.8"
+  def millVersion = "0.5.7"
+  def scalaVersion = "2.12.10"
 
   val logbackClassic = ivy"ch.qos.logback:logback-classic:1.1.3"
   val millMain = ivy"com.lihaoyi::mill-main:${millVersion}"
   val millScalalib = ivy"com.lihaoyi::mill-scalalib:${millVersion}"
-  val scalaTest = ivy"org.scalatest::scalatest:3.0.1"
+  val scalaTest = ivy"org.scalatest::scalatest:3.0.8"
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
 }
 
@@ -148,6 +148,6 @@ def release(
            ) = T.command {
   if (checkRelease()) {
     test()()
-    aspectj.publish(sonatypeCreds = sonatypeCreds, release = release)()
+    aspectj.publish(sonatypeCreds = sonatypeCreds, release = release, readTimeout = 600000)()
   }
 }

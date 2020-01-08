@@ -1,8 +1,8 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: 0.1.0
+:version: 0.2.0
 :aspectjVersion: 1.9.4
-:mill-version: 0.5.1
+:mill-version: 0.5.7
 :toc:
 :toc-placement: preamble
 
@@ -79,7 +79,33 @@ Apache License, version 2
 
 Thanks to https://iba-cg.de/[iba Consulting Gesellschaft mbH & Co KG] for the initial development support.
 
+== Version Compatibility Matrix
+
+Mill is still in active development, and has no stable API yet.
+Hence, not all mill-aspectj versions work with every mill version.
+
+The following table shows a matrix of compatible mill and mill-aspectj versions.
+
+.Version Compatibility Matrix
+[options="header"]
+|===
+| mill-aspectj | mill
+| 0.1.0 | 0.3.6 - 0.5.3
+| 0.2.0 | 0.5.7
+|===
+
 == Changelog
+
+=== mill-aspectj 0.2.0 - 2020-01-08
+:prev-version: 0.1.0
+:version: 0.2.0
+:github-milestone: 1
+
+* Share ajc compiler instance between module
+* Version bump mill API to 0.5.7
+
+_See https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milstone {version}]
+and the https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
 
 === mill-aspectj 0.1.0 - 2019-08-30
 
