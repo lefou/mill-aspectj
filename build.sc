@@ -3,7 +3,7 @@ import mill.define.{Module, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
 
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.1.0`, de.tobiasroeser.mill.integrationtest._
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.1.1`, de.tobiasroeser.mill.integrationtest._
 
 
 object Deps {
