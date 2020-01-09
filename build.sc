@@ -60,7 +60,7 @@ object aspectj extends MillAjcModule {
 
 }
 
-object it extends MillIntegrationTestModule {
+object itest extends MillIntegrationTestModule {
 
   def millTestVersion = T {
     val ctx = T.ctx()
@@ -125,7 +125,7 @@ def Tbuild() = T.command {
 /** Run tests. */
 def test() = T.command {
   aspectj.test.test()()
-  it.test()()
+  itest.test()()
 }
 
 def install() = T.command {
