@@ -1,6 +1,7 @@
 
 = mill-aspectj - AspectJ compiler support for mill
 :version: 0.2.1
+:projectHome: https://github.com/lefou/mill-aspectj
 :aspectjVersion: 1.9.4
 :mill-version: 0.5.8
 :toc:
@@ -43,45 +44,49 @@ Your module needs to extend `de.tobiasroeser.mill.aspectj.AspectjModule` which i
 
 The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following configuration options (over those from `mill.scalalib.JavaModule`).
 
-* `def aspectjVersion: T[String]` - The AspectJ version. _Required_.
-For a list of available releases refer to the https://www.eclipse.org/aspectj/downloads.php[AspectJ Download Page].
+`def aspectjVersion: T[String]`::
+  The AspectJ version. _Required_.
+  For a list of available releases refer to the https://www.eclipse.org/aspectj/downloads.php[AspectJ Download Page].
 
-* `def ivyDeps: T[Agg[Dep]]` - The compile and runtime dependencies.
-Contains by default the `aspectjrt.jar` which is resolved via ivy (`ivy"org.aspectj:aspectjrt:${aspectjVersion()}"`).
-If you do do not use `super.ivyDeps()` when overriding this def, you need to provide the `aspectjrt.jar` manually.
+`def ivyDeps: T[Agg[Dep]]`::
+  The compile and runtime dependencies.
+  Contains by default the `aspectjrt.jar` which is resolved via ivy (`ivy"org.aspectj:aspectjrt:${aspectjVersion()}"`).
+  If you do do not use `super.ivyDeps()` when overriding this def, you need to provide the `aspectjrt.jar` manually.
 
-* `def aspectjToolsDeps: T[Agg[Dep]]` - The ivy dependencies representing the aspectj compiler classes, which is typically a `aspectjtools.jar`.
-Default to `ivy"org.aspectj:aspectjtools:${aspectjVersion()}"`.
+`def aspectjToolsDeps: T[Agg[Dep]]`::
+  The ivy dependencies representing the aspectj compiler classes, which is typically a `aspectjtools.jar`.
+  Default to `ivy"org.aspectj:aspectjtools:${aspectjVersion()}"`.
 
-* `def aspectjToolsClasspath: T[Agg[PathRef]]` - The aspectj compiler classpath.
-By default resolved from `aspectjToolsDeps`.
+`def aspectjToolsClasspath: T[Agg[PathRef]]`::
+  The aspectj compiler classpath.
+  By default resolved from `aspectjToolsDeps`.
 
-* `def ajcOptions: T[Seq[String]]` - Additional options to be used by `ajc` in the `compile` target.
+`def ajcOptions: T[Seq[String]]`::
+  Additional options to be used by `ajc` in the `compile` target.
 
-* `def aspectPath: T[Agg[PathRef]]` - Additional classes, JARs or ZIPs to be used as aspect path (`ajc -aspectpath`).
-In most cases it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
+`def aspectPath: T[Agg[PathRef]]`::
+  Additional classes, JARs or ZIPs to be used as aspect path (`ajc -aspectpath`).
+  In most cases it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
 
-* `def aspectModuleDeps: Seq[JavaModule]` - List of modules to be used as aspect path (`ajc -aspectpath`).
+`def aspectModuleDeps: Seq[JavaModule]`::
+  List of modules to be used as aspect path (`ajc -aspectpath`).
 
-* `def aspectIvyDeps: T[Agg[Dep]]` - List of ivy dependencies to be used as aspect path (`ajc -aspectpath`).
+`def aspectIvyDeps: T[Agg[Dep]]`::
+  List of ivy dependencies to be used as aspect path (`ajc -aspectpath`).
 
-* `def effectiveAspectPath: T[Seq[PathRef]]` - Effective aspect path (`ajc -inpath`).
-In most cases, it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
+`def effectiveAspectPath: T[Seq[PathRef]]`::
+  Effective aspect path (`ajc -inpath`).
+  In most cases, it is enough to use `aspectModuleDeps` and `aspectIvyDeps`.
 
-* `def weavePath: T[Seq[PathRef]]`- List of directories with `.class` files to weave (into target directory).
-Corresponds to `ajc -inpath` option.
+`def weavePath: T[Seq[PathRef]]`::
+  List of directories with `.class` files to weave (into target directory).
+  Corresponds to `ajc -inpath` option.
 
-* `def compile: T[CompilationResult]` - Compiles the source code with the ajc compiler.
+`def compile: T[CompilationResult]`::
+  Compiles the source code with the ajc compiler.
 
-* `def ajcHelp: Command[Unit]` - Shows the help of the AspectJ compiler (`ajc -help`).
-
-== License
-
-Apache License, version 2
-
-== Supporters
-
-Thanks to https://iba-cg.de/[iba Consulting Gesellschaft mbH & Co KG] for the initial development support.
+`def ajcHelp: Command[Unit]`::
+  Shows the help of the AspectJ compiler (`ajc -help`).
 
 == Version Compatibility Matrix
 
@@ -94,10 +99,39 @@ The following table shows a matrix of compatible mill and mill-aspectj versions.
 [options="header"]
 |===
 | mill-aspectj | mill
-| 0.2.0 | 0.5.8 - 0.5.9
+| 0.2.1 | 0.5.8 - 0.5.9
 | 0.2.0 | 0.5.7
 | 0.1.0 | 0.3.6 - 0.5.3
 |===
+
+== License
+
+Apache License, version 2
+
+== Supporters
+
+Thanks to https://iba-cg.de/[iba Consulting Gesellschaft mbH & Co KG] for the initial development support.
+
+== About
+
+mill::
+  https://github.com/lihaoyi/mill[Mill] is a Scala-based open source build tool.
+  In my opinion the best build tool for the JVM.
+  It is fast, reliable and easy to understand.
+
+me::
++
+--
+https://github.com/lefou/[I'm] a professional software developer and love to do open source.
+I'm actively developing and maintaining mill as well as https://github.com/lefou?utf8=%E2%9C%93&tab=repositories&q=topic%3Amill&type=&language=[several mill plugins].
+
+If you like my work, please star it on GitHub. You can also support me via https://github.com/sponsors/lefou[GitHub Sponsors].
+--
+
+Contributing::
+  If you found a bug or have a feature request, please open a {projectHome}/issues[new issue on GitHub].
+  I also accept {projectHome}/pulls[pull requests on GitHub].
+
 
 == Changelog
 
@@ -113,8 +147,8 @@ The following table shows a matrix of compatible mill and mill-aspectj versions.
 * Share ajc compiler instance between module
 * Version bump mill API to 0.5.7
 
-_See https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milstone {version}]
-and the https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+_See {projectHome}/milestone/{github-milestone}?closed=1[milstone {version}]
+and the {projectHome}/compare/{prev-version}...{version}[list of commits]_
 
 === mill-aspectj 0.1.0 - 2019-08-30
 
