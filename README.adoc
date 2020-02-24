@@ -1,8 +1,8 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: 0.2.0
+:version: 0.2.1
 :aspectjVersion: 1.9.4
-:mill-version: 0.5.7
+:mill-version: 0.5.8
 :toc:
 :toc-placement: preamble
 
@@ -94,11 +94,16 @@ The following table shows a matrix of compatible mill and mill-aspectj versions.
 [options="header"]
 |===
 | mill-aspectj | mill
+| 0.2.0 | 0.5.8 - 0.5.9
 | 0.2.0 | 0.5.7
 | 0.1.0 | 0.3.6 - 0.5.3
 |===
 
 == Changelog
+
+=== mill-aspectj 0.2.1 - 2020-02-24
+
+* Version bump mill API to 0.5.8
 
 === mill-aspectj 0.2.0 - 2020-01-08
 :prev-version: 0.1.0
