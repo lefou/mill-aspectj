@@ -7,7 +7,7 @@ import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.1.1`, de.tobiasr
 
 
 object Deps {
-  def millVersion = "0.5.8"
+  def millVersion = "0.6.0"
   def scalaVersion = "2.12.10"
 
   val logbackClassic = ivy"ch.qos.logback:logback-classic:1.1.3"
