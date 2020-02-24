@@ -105,6 +105,10 @@ The following table shows a matrix of compatible mill and mill-aspectj versions.
 | 0.1.0 | 0.3.6 - 0.5.3
 |===
 
+== Download
+
+You can download binary releases from https://search.maven.org/search?q=a:de.tobiasroeser.mill.aspectj_2.12%20g:de.tototec[Maven Central].
+
 == License
 
 Apache License, version 2
