@@ -133,7 +133,7 @@ trait AspectjModule extends JavaModule {
    * Shows the help of the AspectJ compiler (`ajc -help`).
    */
   def ajcHelp(extraArgs: String*): Command[Unit] = T.command {
-    ajcTask("-help")
+    ajcTask("-help")()
     // terminate with a new line
     println()
   }
