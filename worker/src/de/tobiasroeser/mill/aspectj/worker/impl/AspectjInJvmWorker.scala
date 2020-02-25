@@ -12,25 +12,28 @@ import os.Path
 class AspectjInJvmWorker() extends AspectjWorker {
 
   override def compile(
-                        classpath: Seq[Path],
-                        sourceDirs: Seq[Path],
-                        options: Seq[String],
-                        aspectPath: Seq[Path],
-                        inPath: Seq[Path]
-                      )(implicit ctx: Ctx): Result[CompilationResult] = {
-    // synchronized: AspectJ compiler seems to fail unpredictably with ThreadDeath when run concurrently
-    synchronized {
+    classpath: Seq[Path],
+    sourceDirs: Seq[Path],
+    options: Seq[String],
+    aspectPath: Seq[Path],
+    inPath: Seq[Path],
+    allowConcurrentRuns: Boolean
+  )(implicit ctx: Ctx): Result[CompilationResult] = {
+    if (allowConcurrentRuns) {
+      internalCompile(classpath, sourceDirs, options, aspectPath, inPath)
+    } else synchronized {
+      // synchronized: AspectJ compiler seems to fail unpredictably with ThreadDeath when run concurrently
       internalCompile(classpath, sourceDirs, options, aspectPath, inPath)
     }
   }
 
-    def internalCompile(
-                        classpath: Seq[Path],
-                        sourceDirs: Seq[Path],
-                        options: Seq[String],
-                        aspectPath: Seq[Path],
-                        inPath: Seq[Path]
-                      )(implicit ctx: Ctx): Result[CompilationResult] = {
+  def internalCompile(
+    classpath: Seq[Path],
+    sourceDirs: Seq[Path],
+    options: Seq[String],
+    aspectPath: Seq[Path],
+    inPath: Seq[Path]
+  )(implicit ctx: Ctx): Result[CompilationResult] = {
     val dest = ctx.dest
     ctx.log.debug(s"Destination: ${dest}")
 
@@ -64,7 +67,7 @@ class AspectjInJvmWorker() extends AspectjWorker {
       // sourceDirs
       asOptionalPath("-sourceroots", sourceDirs),
       // destination dir
-      Seq("-d", classesDir.toIO.getPath()),
+      Seq("-d", classesDir.toIO.getPath())
     ).flatten
 
     ctx.log.debug(s"ajc args: ${ajcArgs.mkString(" ")}")
@@ -82,7 +85,7 @@ class AspectjInJvmWorker() extends AspectjWorker {
     val res = CompilationResult(analysisFile, PathRef(classesDir))
 
     ajcMain.getMessageHandler().numMessages(IMessage.ERROR, true) match {
-      case 0 =>  Result.Success(res)
+      case 0 => Result.Success(res)
       case n => Result.Failure(s"AspectJ compiler failed with ${n} errors", Some(res))
     }
 

@@ -14,7 +14,7 @@ import java.{lang => jl}
 
 import de.tobiasroeser.mill.aspectj.worker.AspectjWorker
 import mill.scalalib.GenIdeaModule.{Element, IdeaConfigFile, JavaFacet}
-import mill.api.Loose
+import mill.api.{Ctx, Loose}
 
 trait AspectjModule extends JavaModule {
   def aspectjWorkerModule: AspectjWorkerModule = AspectjWorkerModule
@@ -109,32 +109,33 @@ trait AspectjModule extends JavaModule {
     Seq[PathRef]()
   }
 
+  def aspectjAllowConcurrentRuns = false
+
   /**
    * Compiles the source code with the ajc compiler.
    */
   override def compile: T[CompilationResult] = T {
+    ajcTask()()
+  }
+
+  def ajcTask(extraArgs: String*): Task[CompilationResult] = T.task {
     aspectjWorker().compile(
       classpath = compileClasspath().toSeq.map(_.path),
       sourceDirs = allSources().map(_.path),
-      options = ajcOptions(),
+      options = extraArgs ++ ajcOptions(),
       aspectPath = effectiveAspectPath().toSeq.map(_.path),
-      inPath = weavePath().map(_.path)
-    )(T.ctx())
+      inPath = weavePath().map(_.path),
+      allowConcurrentRuns = aspectjAllowConcurrentRuns
+    )
   }
 
   /**
    * Shows the help of the AspectJ compiler (`ajc -help`).
    */
-  def ajcHelp(extraArgs: String*) = T.command {
-    aspectjWorker().compile(
-      classpath = aspectjToolsClasspath().toSeq.map(_.path),
-      sourceDirs = Seq(),
-      options = Seq("-help") ++ extraArgs,
-      aspectPath = Seq(),
-      inPath = Seq()
-    )
+  def ajcHelp(extraArgs: String*): Command[Unit] = T.command {
+    ajcTask("-help")
+    // terminate with a new line
     println()
-    ()
   }
 
 }
