@@ -1,15 +1,11 @@
 package de.tobiasroeser.mill.aspectj.worker.impl
 
 import java.io.File
-import java.lang.reflect.InvocationTargetException
-import java.net.{URL, URLClassLoader}
-import java.security.Permission
-import java.{util, lang => jl}
 
 import de.tobiasroeser.mill.aspectj.worker.AspectjWorker
 import mill.api.{Ctx, PathRef, Result}
 import mill.scalalib.api.CompilationResult
-import org.aspectj.bridge.{IMessage, IMessageHolder, MessageHandler}
+import org.aspectj.bridge.IMessage
 import org.aspectj.tools.ajc.Main
 import os.Path
 
