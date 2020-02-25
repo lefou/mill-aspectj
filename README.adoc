@@ -140,6 +140,12 @@ Contributing::
 
 == Changelog
 
+=== {master}
+
+* Splitted out new api and worker package to access Aspectj Java API instead of reflection
+* Removed need to use a Java SecurityManager to trap `System.exit()` calls
+* Made concurrent runs of the compiler configurable
+
 === mill-aspectj 0.2.2 - 2020-02-24
 
 * Version bump mill API to 0.6.0
