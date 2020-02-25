@@ -211,7 +211,7 @@ def release(
         aspectj.publishArtifacts
       )),
       readTimeout = 600000
-    )
+    )()
     ()
   }
 }
