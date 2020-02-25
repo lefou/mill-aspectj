@@ -1,18 +1,23 @@
 import mill._
-import mill.define.{Module, TaskModule}
+import mill.define.{Command, Module, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
-
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.1.1`, de.tobiasroeser.mill.integrationtest._
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.1.2`
+import de.tobiasroeser.mill.integrationtest._
+import mill.api.Loose
+import mill.main.Tasks
 
 
 object Deps {
   def millVersion = "0.6.0"
   def scalaVersion = "2.12.10"
 
+  val aspectjTools = ivy"org.aspectj:aspectjtools:1.8.13"
   val logbackClassic = ivy"ch.qos.logback:logback-classic:1.1.3"
   val millMain = ivy"com.lihaoyi::mill-main:${millVersion}"
+  val millMainApi = ivy"com.lihaoyi::mill-main-api:${millVersion}"
   val millScalalib = ivy"com.lihaoyi::mill-scalalib:${millVersion}"
+  val millScalalibApi = ivy"com.lihaoyi::mill-scalalib-api:${millVersion}"
   val scalaTest = ivy"org.scalatest::scalatest:3.0.8"
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
 }
@@ -42,9 +47,31 @@ trait MillAjcModule extends ScalaModule with PublishModule {
 
 }
 
+
+object api extends MillAjcModule {
+  override def artifactName = T { "de.tobiasroeser.mill.aspectj-api" }
+  override def compileIvyDeps: T[Loose.Agg[Dep]] = Agg(
+    Deps.millMainApi,
+    Deps.millScalalibApi
+  )
+
+}
+
+object worker extends MillAjcModule {
+  override def artifactName: T[String] = "de.tobiasroeser.mill.aspectj-worker"
+  override def moduleDeps: Seq[PublishModule] = Seq(api)
+  override def compileIvyDeps = Agg(
+    Deps.millMainApi,
+    Deps.millScalalibApi,
+    Deps.aspectjTools
+  )
+}
+
 object aspectj extends MillAjcModule {
 
-  override def artifactName = T { "de.tobiasroeser.mill.aspectj" }
+  override def artifactName = "de.tobiasroeser.mill.aspectj"
+
+  override def moduleDeps: Seq[PublishModule] = Seq(api)
 
   override def compileIvyDeps = Agg(
     Deps.millMain,
@@ -58,6 +85,30 @@ object aspectj extends MillAjcModule {
     def testFrameworks = Seq("org.scalatest.tools.Framework")
   }
 
+  override def generatedSources: T[Seq[PathRef]] = T{
+    super.generatedSources() ++ {
+      val dest = T.ctx().dest
+      val body =
+        s"""package de.tobiasroeser.mill.aspectj
+           |
+           |/**
+           | * Build-time generated versions file.
+           | */
+           |object Versions {
+           |  /** The mill-aspectj version. */
+           |  val millAspectjVersion = "${publishVersion()}"
+           |  /** The mill API version used to build mill-kotlin. */
+           |  val buildTimeMillVersion = "${Deps.millVersion}"
+           |  /** The ivy dependency holding the mill aspectj worker impl. */
+           |  val millAspectjWorkerImplIvyDep = "${worker.pomSettings().organization}:${worker.artifactId()}:${worker.publishVersion()}"
+           |}
+           |""".stripMargin
+
+      os.write(dest / "Versions.scala", body)
+
+      Seq(PathRef(dest))
+    }
+  }
 }
 
 object itest extends MillIntegrationTestModule {
@@ -68,6 +119,8 @@ object itest extends MillIntegrationTestModule {
   }
 
   def pluginsUnderTest = Seq(aspectj)
+  def temporaryIvyModules = Seq(api, worker)
+
 
 }
 
@@ -131,13 +184,14 @@ def test() = T.command {
 def install() = T.command {
   T.ctx().log.info("Installing")
   test()()
+  api.publishLocal()()
+  worker.publishLocal()()
   aspectj.publishLocal()()
 }
 
 def checkRelease: T[Boolean] = T.input {
   if (GitSupport.publishVersion()._2.contains("DIRTY")) {
-    T.ctx().log.error("Project (git) state is dirty. Release not recommended!")
-    false
+    mill.api.Result.Failure("Project (git) state is dirty. Release not recommended!", Some(false))
   } else { true }
 }
 
@@ -145,10 +199,20 @@ def checkRelease: T[Boolean] = T.input {
 def release(
              sonatypeCreds: String,
              release: Boolean = true
-           ) = T.command {
+           ): Command[Unit] = T.command {
   if (checkRelease()) {
     test()()
-    aspectj.publish(sonatypeCreds = sonatypeCreds, release = release, readTimeout = 600000)()
+    PublishModule.publishAll(
+      sonatypeCreds = sonatypeCreds,
+      release = release,
+      publishArtifacts = Tasks(Seq(
+        api.publishArtifacts,
+        worker.publishArtifacts,
+        aspectj.publishArtifacts
+      )),
+      readTimeout = 600000
+    )
+    ()
   }
 }
 

@@ -11,8 +11,9 @@ import mill.scalalib.{Dep, DepSyntax, GenIdeaImpl, JavaModule}
 import mill.scalalib.api.CompilationResult
 import os.Path
 import java.{lang => jl}
-import mill.scalalib.GenIdeaModule.{JavaFacet, Element, IdeaConfigFile}
 
+import de.tobiasroeser.mill.aspectj.worker.AspectjWorker
+import mill.scalalib.GenIdeaModule.{Element, IdeaConfigFile, JavaFacet}
 import mill.api.Loose
 
 trait AspectjModule extends JavaModule {
@@ -37,7 +38,10 @@ trait AspectjModule extends JavaModule {
    * Default to `ivy"org.aspectj:aspectjtools:$${aspectjVersion()}"`.
    */
   def aspectjToolsDeps: T[Agg[Dep]] = T {
-    Agg(ivy"org.aspectj:aspectjtools:${aspectjVersion()}")
+    Agg(
+      ivy"org.aspectj:aspectjtools:${aspectjVersion()}",
+      ivy"${Versions.millAspectjWorkerImplIvyDep}"
+    )
   }
 
   /**
@@ -48,7 +52,7 @@ trait AspectjModule extends JavaModule {
     resolveDeps(aspectjToolsDeps)
   }
 
-  def aspectjWorker: Worker[AspectjApi] = T.worker {
+  def aspectjWorker: Worker[AspectjWorker] = T.worker {
     // new AspectjWorkerImpl(aspectjToolsClasspath().toSeq.map(_.path))
     aspectjWorkerModule.aspectjWorkerManager().get(aspectjToolsClasspath().toSeq)
   }
@@ -92,7 +96,7 @@ trait AspectjModule extends JavaModule {
    * In most cases, it is enough to use `aspectModuleDeps` and `resolvedAspectIvyDeps`.
    */
   def effectiveAspectPath: T[Seq[PathRef]] = T {
-    Task.traverse(aspectModuleDeps)(_.localClasspath)().flatten ++
+    Target.traverse(aspectModuleDeps)(_.localClasspath)().flatten ++
       resolvedAspectIvyDeps() ++
       aspectPath()
   }

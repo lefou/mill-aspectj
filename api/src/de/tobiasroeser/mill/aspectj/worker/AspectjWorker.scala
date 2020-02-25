@@ -1,15 +1,15 @@
-package de.tobiasroeser.mill.aspectj
+package de.tobiasroeser.mill.aspectj.worker
 
-import mill.api.Ctx
+import mill.api.{Ctx, Result}
 import mill.scalalib.api.CompilationResult
 import os.Path
 
-trait AspectjApi {
+trait AspectjWorker {
   def compile(
     classpath: Seq[Path],
     sourceDirs: Seq[Path],
     options: Seq[String],
     aspectPath: Seq[Path],
     inPath: Seq[Path]
-  )(implicit ctx: Ctx): CompilationResult
+  )(implicit ctx: Ctx): Result[CompilationResult]
 }
