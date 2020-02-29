@@ -111,7 +111,7 @@ You can download binary releases from https://search.maven.org/search?q=a:de.tob
 
 == License
 
-Apache License, version 2
+This project is published under the https://www.apache.org/licenses/LICENSE-2.0[Apache License, Version 2.0].
 
 == Supporters
 

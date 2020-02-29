@@ -2,11 +2,13 @@ import mill._
 import mill.define.{Command, Module, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.1.2`
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.2.1`
 import de.tobiasroeser.mill.integrationtest._
 import mill.api.Loose
 import mill.main.Tasks
 
+val baseDir = build.millSourcePath
+val rtMillVersion = build.version
 
 object Deps {
   def millVersion = "0.6.0"
@@ -170,60 +172,67 @@ object GitSupport extends Module {
 
 }
 
-/** Build JARs. */
-def Tbuild() = T.command {
-  aspectj.jar()
-}
+/** Some convenience targets. */
+object P extends Module {
+    /** Build JARs. */
+    def build() = T.command {
+      aspectj.jar()
+    }
 
-/** Run tests. */
-def test() = T.command {
-  aspectj.test.test()()
-  itest.test()()
-}
+    /** Run tests. */
+    def test() = T.command {
+      aspectj.test.test()()
+      itest.test()()
+    }
 
-def install() = T.command {
-  T.ctx().log.info("Installing")
-  test()()
-  api.publishLocal()()
-  worker.publishLocal()()
-  aspectj.publishLocal()()
-}
+    def install() = T.command {
+      T.ctx().log.info("Installing")
+      test()()
+      api.publishLocal()()
+      worker.publishLocal()()
+      aspectj.publishLocal()()
+    }
 
-def checkRelease: T[Boolean] = T.input {
-  if (GitSupport.publishVersion()._2.contains("DIRTY")) {
-    mill.api.Result.Failure("Project (git) state is dirty. Release not recommended!", Some(false))
-  } else { true }
-}
+    def checkRelease: T[Boolean] = T.input {
+      if (GitSupport.publishVersion()._2.contains("DIRTY")) {
+        mill.api.Result.Failure("Project (git) state is dirty. Release not recommended!", Some(false))
+      } else {
+        true
+      }
+    }
 
-/** Test and release to Maven Central. */
-def release(
-             sonatypeCreds: String,
-             release: Boolean = true
-           ): Command[Unit] = T.command {
-  if (checkRelease()) {
-    test()()
-    PublishModule.publishAll(
-      sonatypeCreds = sonatypeCreds,
-      release = release,
-      publishArtifacts = Tasks(Seq(
-        api.publishArtifacts,
-        worker.publishArtifacts,
-        aspectj.publishArtifacts
-      )),
-      readTimeout = 600000
-    )()
-    ()
-  }
-}
+    /** Test and release to Maven Central. */
+    def release(
+                 sonatypeCreds: String,
+                 release: Boolean = true
+               ): Command[Unit] = T.command {
+      if (checkRelease()) {
+        test()()
+        PublishModule.publishAll(
+          sonatypeCreds = sonatypeCreds,
+          release = release,
+          publishArtifacts = Tasks(Seq(
+            api.publishArtifacts,
+            worker.publishArtifacts,
+            aspectj.publishArtifacts
+          )),
+          readTimeout = 600000
+        )()
+        ()
+      }
+    }
 
-/**
- * Update the millw script.
- */
-def millw() = T.command {
-  val target = mill.modules.Util.download("https://raw.githubusercontent.com/lefou/millw/master/millw")
-  val millw = build.millSourcePath / "millw"
-  os.copy.over(target.path, millw)
-  os.perms.set(millw, os.perms(millw) + java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE)
-  target
+    /**
+     * Update the millw script.
+     */
+    def millw() = T.command {
+      val target = mill.modules.Util.download("https://raw.githubusercontent.com/lefou/millw/master/millw")
+      val millw = baseDir / "millw"
+      val res = os.proc(
+        "sed", s"""s,\\(^DEFAULT_MILL_VERSION=\\).*$$,\\1${scala.util.matching.Regex.quoteReplacement(rtMillVersion())},""",
+        target.path.toIO.getAbsolutePath()).call(cwd = baseDir)
+      os.write.over(millw, res.out.text())
+      os.perms.set(millw, os.perms(millw) + java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE)
+      target
+    }
 }
-
