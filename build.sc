@@ -14,7 +14,7 @@ object Deps {
   def millVersion = "0.6.0"
   def scalaVersion = "2.12.10"
 
-  val aspectjTools = ivy"org.aspectj:aspectjtools:1.8.13"
+  val aspectjTools = ivy"org.aspectj:aspectjtools:1.9.5"
   val logbackClassic = ivy"ch.qos.logback:logback-classic:1.1.3"
   val millMain = ivy"com.lihaoyi::mill-main:${millVersion}"
   val millMainApi = ivy"com.lihaoyi::mill-main-api:${millVersion}"
@@ -35,6 +35,7 @@ trait MillAjcModule extends ScalaModule with PublishModule {
   def publishVersion = GitSupport.publishVersion()._2
 
   override def javacOptions = Seq("-source", "1.8", "-target", "1.8")
+  override def scalacOptions = Seq("-target:jvm-1.8")
 
   def pomSettings = T {
     PomSettings(

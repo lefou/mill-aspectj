@@ -10,7 +10,7 @@ import org.scalatest.Assertions
 
 object aspects extends AspectjModule {
 
-  def aspectjVersion = "1.8.10"
+  def aspectjVersion = "1.9.5"
 
   def ajcOptions = Seq("-8")
 
@@ -18,7 +18,7 @@ object aspects extends AspectjModule {
 
 object main extends AspectjModule {
 
-  def aspectjVersion = "1.8.10"
+  def aspectjVersion = "1.9.5"
 
   def ajcOptions = Seq("-8")
 
@@ -27,6 +27,7 @@ object main extends AspectjModule {
   def aspectModuleDeps = Seq(aspects)
   
   object test extends Tests {
+    def javacOptions = Seq("-source", "1.8", "-target", "1.8")
     def testFrameworks = Seq("com.novocode.junit.JUnitFramework")
     def ivyDeps = Agg(
       ivy"com.novocode:junit-interface:0.11",

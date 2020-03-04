@@ -10,12 +10,11 @@ import org.scalatest.Assertions
 
 object main extends AspectjModule {
 
-  def aspectjVersion = "1.9.5"
+  def aspectjVersion = "1.8.10"
 
-  def ajcOptions = Seq("-1.8")
+  def ajcOptions = Seq("-8")
 
   object test extends Tests {
-    def javacOptions = Seq("-source", "1.8", "-target", "1.8")
     def testFrameworks = Seq("com.novocode.junit.JUnitFramework")
     def ivyDeps = Agg(
       ivy"com.novocode:junit-interface:0.11",
@@ -25,13 +24,16 @@ object main extends AspectjModule {
 
 }
 
-def verify(): Command[Unit] = T.command {
+def verify(): Command[Unit] =
+  if(System.getProperty("java.specification.version").startsWith("1.")) T.command {
+    // Ajc 1.8.10 doesn't work with Java9+
+    val A = new Assertions{}
+    import A._
 
-  val A = new Assertions{}
-  import A._
-
-  val cr = main.compile()
-  main.test.test()()
-
-  ()
-}
+    val cr = main.compile()
+    main.test.test()()
+    ()
+  } else T.command {
+    println("Skipping test with ajc 1.8.10 on Java9+")
+    ()
+  }
