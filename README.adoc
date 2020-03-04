@@ -1,8 +1,8 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: 0.2.2
+:version: 0.3.0
 :projectHome: https://github.com/lefou/mill-aspectj
-:aspectjVersion: 1.9.4
+:aspectjVersion: 1.9.5
 :mill-version: 0.6.0
 :toc:
 :toc-placement: preamble
@@ -142,12 +142,26 @@ Contributing::
 
 === {master}
 :version: master
+:prev-version: 0.3.0
+:github-milestone:
+
+_See
+ifeval::["{github-milestone}" != ""]
+https://github.com/lefou/mill-kotlin/milestone/{github-milestone}?closed=1[milstone {version}]
+and the
+endif::[]
+https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of commits]_
+
+=== mill-aspectj 0.3.0 - 2020-03-04
+:version: 0.3.0
 :prev-version: 0.2.2
 :github-milestone: 2
 
 * Splitted out new api and worker package to access Aspectj Java API instead of reflection
 * Removed need to use a Java SecurityManager to trap `System.exit()` calls
 * Made concurrent runs of the compiler configurable
+* Fixed `ajcHelp` task
+* Support for Java 11 and others
 
 _See
 ifeval::["{github-milestone}" != ""]

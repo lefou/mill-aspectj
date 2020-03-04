@@ -200,9 +200,11 @@ object P extends Module {
     }
 
     def checkRelease: T[Boolean] = T.input {
+      millw()()
       if (GitSupport.publishVersion()._2.contains("DIRTY")) {
         mill.api.Result.Failure("Project (git) state is dirty. Release not recommended!", Some(false))
       } else {
+	println(s"Version: ${aspectj.publishVersion()}")
         true
       }
     }
