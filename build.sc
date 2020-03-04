@@ -186,9 +186,14 @@ object P extends Module {
       itest.test()()
     }
 
+    def testCached = T{
+      aspectj.test.testCached()
+      itest.testCached()
+    }
+
     def install() = T.command {
       T.ctx().log.info("Installing")
-      test()()
+      testCached()
       api.publishLocal()()
       worker.publishLocal()()
       aspectj.publishLocal()()
@@ -208,7 +213,7 @@ object P extends Module {
                  release: Boolean = true
                ): Command[Unit] = T.command {
       if (checkRelease()) {
-        test()()
+        testCached()
         PublishModule.publishAll(
           sonatypeCreds = sonatypeCreds,
           release = release,
