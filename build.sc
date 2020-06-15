@@ -2,7 +2,7 @@ import mill._
 import mill.define.{Command, Module, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.2.1`
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.3.1`
 import de.tobiasroeser.mill.integrationtest._
 import mill.api.Loose
 import mill.main.Tasks
