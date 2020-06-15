@@ -1,6 +1,6 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: 0.3.0
+:version: 0.3.1
 :projectHome: https://github.com/lefou/mill-aspectj
 :aspectjVersion: 1.9.5
 :mill-version: 0.6.0
@@ -142,17 +142,33 @@ Contributing::
 
 == Changelog
 
-=== {master}
-:version: master
-:prev-version: 0.3.0
+=== {main}
+:version: main
+:prev-version: 0.3.1
 :github-milestone:
 
 _See
 ifeval::["{github-milestone}" != ""]
-https://github.com/lefou/mill-kotlin/milestone/{github-milestone}?closed=1[milstone {version}]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+
+=== mill-aspectj 0.3.1 - 2020-06-15
+:version: 0.3.1
+:prev-version: 0.3.0
+:github-milestone:
+
+* Support for mill API 0.7.x and Scala 2.13
+* Switch to GitHub Actions workflow and removed Travis CI setup
+* Enabled auto-deployment of tagged and snapshot releases to Maven Central
+
+_See
+ifeval::["{github-milestone}" != ""]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
+and the
+endif::[]
+https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
 
 === mill-aspectj 0.3.0 - 2020-03-04
 :version: 0.3.0
@@ -167,10 +183,10 @@ https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of 
 
 _See
 ifeval::["{github-milestone}" != ""]
-https://github.com/lefou/mill-kotlin/milestone/{github-milestone}?closed=1[milstone {version}]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
 
 === mill-aspectj 0.2.2 - 2020-02-24
 :version: 0.2.2
@@ -181,10 +197,10 @@ https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of 
 
 _See
 ifeval::["{github-milestone}" != ""]
-https://github.com/lefou/mill-kotlin/milestone/{github-milestone}?closed=1[milstone {version}]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
 
 === mill-aspectj 0.2.1 - 2020-02-24
 :version: 0.2.1
@@ -195,10 +211,10 @@ https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of 
 
 _See
 ifeval::["{github-milestone}" != ""]
-https://github.com/lefou/mill-kotlin/milestone/{github-milestone}?closed=1[milstone {version}]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
 
 === mill-aspectj 0.2.0 - 2020-01-08
 :version: 0.2.0
@@ -210,10 +226,10 @@ https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of 
 
 _See
 ifeval::["{github-milestone}" != ""]
-https://github.com/lefou/mill-kotlin/milestone/{github-milestone}?closed=1[milstone {version}]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-kotlin/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
 
 === mill-aspectj 0.1.0 - 2019-08-30
 
