@@ -8,7 +8,7 @@
 :toc-placement: preamble
 
 ifdef::env-github[]
-image:https://travis-ci.org/lefou/mill-aspectj.svg?branch=master["Build Status", link="https://travis-ci.org/lefou/mill-aspectj"]
+image:https://github.com/lefou/mill-aspectj/workflows/.github/workflows/build.yml/badge.svg["GitHub Actions Build Status", link="https://github.com/lefou/mill-aspectj/actions"]
 endif::[]
 
 Documentation for mill-aspectj, a mill plugin to support the https://projects.eclipse.org/projects/tools.aspectj[AspectJ language and compiler].
