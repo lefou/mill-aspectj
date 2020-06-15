@@ -18,6 +18,6 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
 
-      - run: ./millw -i __.compile
+      - run: ./millw -i -j 0 __.compile
 
-      - run: ./millw -i -k __.testCached
+      - run: ./millw -i -j 0 -k __.testCached
