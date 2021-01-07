@@ -1,8 +1,7 @@
 import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest_mill0.9:0.4.0-4-f94050`
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version_mill0.9:0.1.0`
-
 import mill._
-import mill.define.{Command, Module, TaskModule}
+import mill.define.{Command, Module, Target, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
 import de.tobiasroeser.mill.integrationtest._
@@ -154,6 +153,7 @@ class ItestCross(millVersion: String)  extends MillIntegrationTestModule {
   override def pluginsUnderTest = Seq(aspectj(millPlatform))
   override def temporaryIvyModules = Seq(api(millPlatform), worker(millPlatform))
 
+  override def testTargets: T[Seq[String]] = Seq("--color", "false", "verify")
 
 }
 
