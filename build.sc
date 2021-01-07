@@ -62,6 +62,7 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
     Agg(ivy"${scalaOrganization()}:scala-library:${crossScalaVersion}")
   }
 
+  override def artifactSuffix = s"_mill${millPlatform}_${artifactScalaVersion()}"
   override def publishVersion: T[String] = VcsVersion.vcsState().format()
 
   override def javacOptions = Seq("-source", "1.8", "-target", "1.8")
