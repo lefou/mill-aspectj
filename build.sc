@@ -1,21 +1,22 @@
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest_mill0.9:0.4.0`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version_mill0.9:0.1.0`
+
 import mill._
 import mill.define.{Command, Module, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest:0.3.1`
 import de.tobiasroeser.mill.integrationtest._
-import mill.api.Loose
-import mill.main.Tasks
+import de.tobiasroeser.mill.vcs.version.VcsVersion
 import os.Path
-
-import scala.collection.immutable.ListMap
 
 val baseDir = build.millSourcePath
 val rtMillVersion = build.version
 
 trait Deps {
-  def millVersion = "0.7.0"
-  def scalaVersion = "2.13.2"
+  def millPlatform: String
+  def millVersion: String
+  def scalaVersion: String
+  def itestVersions: Seq[String]
 
   val aspectjTools = ivy"org.aspectj:aspectjtools:1.9.5"
   val logbackClassic = ivy"ch.qos.logback:logback-classic:1.1.3"
@@ -27,25 +28,41 @@ trait Deps {
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
 }
 
-object Deps_0_7 extends Deps
+
+object Deps_0_9 extends Deps {
+  override def millPlatform = "0.9"
+  override def millVersion = "0.9.3"
+  override def scalaVersion = "2.13.2"
+  override def itestVersions = Seq("0.9.4", "0.9.3")
+}
+object Deps_0_7 extends Deps {
+  override def millPlatform = "0.7"
+  override def millVersion = "0.7.0"
+  override def scalaVersion = "2.13.2"
+  override def itestVersions = Seq("0.8.0", "0.7.3", "0.7.2", "0.7.1", "0.7.0")
+}
 object Deps_0_6 extends Deps {
+  override def millPlatform = "0.6"
   override def millVersion = "0.6.0"
   override def scalaVersion = "2.12.10"
+  override def itestVersions = Seq("0.6.3", "0.6.2", "0.6.1", "0.6.0")
 }
 
 
-val versions: Map[String, Deps] = ListMap("0.7" -> Deps_0_7, "0.6" -> Deps_0_6)
+val configs = Seq(Deps_0_9,Deps_0_7,Deps_0_6)
+val matrix = configs.map(d => d.millPlatform -> d).toMap
+val testMatrix = configs.flatMap(d => d.itestVersions.map(_ -> d)).toMap
 
 trait MillAjcModule extends CrossScalaModule with PublishModule {
-  def millApiVersion: String
-  def deps: Deps = versions(millApiVersion)
+  def millPlatform: String
+  def deps: Deps = matrix(millPlatform)
   def crossScalaVersion = deps.scalaVersion
 
   override def ivyDeps = T {
-    Agg(ivy"${scalaOrganization()}:scala-library:${scalaVersion()}")
+    Agg(ivy"${scalaOrganization()}:scala-library:${crossScalaVersion}")
   }
 
-  def publishVersion = GitSupport.publishVersion()._2
+  override def publishVersion: T[String] = VcsVersion.vcsState().format()
 
   override def javacOptions = Seq("-source", "1.8", "-target", "1.8")
   override def scalacOptions = Seq("-target:jvm-1.8")
@@ -60,24 +77,23 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
       developers = Seq(Developer("lefou", "Tobias Roeser", "https.//github.com/lefou"))
     )
   }
-
 }
 
 
-object api extends Cross[ApiCross](versions.keysIterator.toSeq: _*)
-class ApiCross(override val millApiVersion: String) extends MillAjcModule {
-  override def artifactName = T { "de.tobiasroeser.mill.aspectj-api" }
-  override def compileIvyDeps: T[Loose.Agg[Dep]] = Agg(
+object api extends Cross[ApiCross](configs.map(_.millPlatform): _*)
+class ApiCross(override val millPlatform: String) extends MillAjcModule {
+  override def artifactName = "de.tobiasroeser.mill.aspectj-api"
+  override def compileIvyDeps: T[Agg[Dep]] = Agg(
     deps.millMainApi,
     deps.millScalalibApi
   )
 
 }
 
-object worker extends Cross[WorkerCross](versions.keysIterator.toSeq: _*)
-class WorkerCross(override val millApiVersion: String) extends MillAjcModule {
+object worker extends Cross[WorkerCross](configs.map(_.millPlatform): _*)
+class WorkerCross(override val millPlatform: String) extends MillAjcModule {
   override def artifactName: T[String] = "de.tobiasroeser.mill.aspectj-worker"
-  override def moduleDeps: Seq[PublishModule] = Seq(api(millApiVersion))
+  override def moduleDeps: Seq[PublishModule] = Seq(api(millPlatform))
   override def compileIvyDeps = Agg(
     deps.millMainApi,
     deps.millScalalibApi,
@@ -85,13 +101,10 @@ class WorkerCross(override val millApiVersion: String) extends MillAjcModule {
   )
 }
 
-object aspectj extends Cross[AspectjCross](versions.keysIterator.toSeq: _*)
-class AspectjCross(override val millApiVersion: String) extends MillAjcModule {
-
+object aspectj extends Cross[AspectjCross](configs.map(_.millPlatform): _*)
+class AspectjCross(override val millPlatform: String) extends MillAjcModule {
   override def artifactName = "de.tobiasroeser.mill.aspectj"
-
-  override def moduleDeps: Seq[PublishModule] = Seq(api(millApiVersion))
-
+  override def moduleDeps: Seq[PublishModule] = Seq(api(millPlatform))
   override def compileIvyDeps = Agg(
     deps.millMain,
     deps.millScalalib
@@ -119,7 +132,7 @@ class AspectjCross(override val millApiVersion: String) extends MillAjcModule {
            |  /** The mill API version used to build mill-kotlin. */
            |  val buildTimeMillVersion = "${deps.millVersion}"
            |  /** The ivy dependency holding the mill aspectj worker impl. */
-           |  val millAspectjWorkerImplIvyDep = "${worker(millApiVersion).pomSettings().organization}:${worker(millApiVersion).artifactId()}:${worker(millApiVersion).publishVersion()}"
+           |  val millAspectjWorkerImplIvyDep = "${worker(millPlatform).pomSettings().organization}:${worker(millPlatform).artifactId()}:${worker(millPlatform).publishVersion()}"
            |}
            |""".stripMargin
 
@@ -130,104 +143,21 @@ class AspectjCross(override val millApiVersion: String) extends MillAjcModule {
   }
 }
 
-val testVersions = Seq(
-  "0.7.3", "0.7.2", "0.7.1", "0.7.0",
-  "0.6.3", "0.6.2", "0.6.1", "0.6.0"
-)
 
-object itest extends Cross[ItestCross](testVersions: _*)
+object itest extends Cross[ItestCross](configs.flatMap(_.itestVersions): _*)
 class ItestCross(millVersion: String)  extends MillIntegrationTestModule {
-  val millApiVersion = millVersion.split("[.]").take(2).mkString(".")
+  val deps: Deps = testMatrix(millVersion)
+  val millPlatform =  deps.millPlatform
   override def millSourcePath: Path = super.millSourcePath / os.up
   override def millTestVersion = millVersion
-  override def pluginsUnderTest = Seq(aspectj(millApiVersion))
-  override def temporaryIvyModules = Seq(api(millApiVersion), worker(millApiVersion))
+  override def pluginsUnderTest = Seq(aspectj(millPlatform))
+  override def temporaryIvyModules = Seq(api(millPlatform), worker(millPlatform))
 
-
-}
-
-import mill.define.Sources
-
-object GitSupport extends Module {
-
-  /**
-   * The current git revision.
-   */
-  def gitHead: T[String] = T.input {
-    sys.env.get("TRAVIS_COMMIT").getOrElse(
-      os.proc('git, "rev-parse", "HEAD").call().out.trim
-    ).toString()
-  }
-
-  /**
-   * Calc a publishable version based on git tags and dirty state.
-   *
-   * @return A tuple of (the latest tag, the calculated version string)
-   */
-  def publishVersion: T[(String, String)] = T.input {
-    val tag =
-      try Option(
-        os.proc('git, 'describe, "--exact-match", "--tags", "--always", gitHead()).call().out.trim
-      )
-      catch {
-        case e => None
-      }
-
-    val dirtySuffix = os.proc('git, 'diff).call().out.string.trim() match {
-      case "" => ""
-      case s => "-DIRTY" + Integer.toHexString(s.hashCode)
-    }
-
-    tag match {
-      case Some(t) => (t, t)
-      case None =>
-        val latestTaggedVersion = os.proc('git, 'describe, "--abbrev=0", "--always", "--tags").call().out.trim
-
-        val commitsSinceLastTag =
-          os.proc('git, "rev-list", gitHead(), "--not", latestTaggedVersion, "--count").call().out.trim.toInt
-
-        (latestTaggedVersion, s"$latestTaggedVersion-$commitsSinceLastTag-${gitHead().take(6)}$dirtySuffix")
-    }
-  }
 
 }
 
 /** Some convenience targets. */
 object P extends Module {
-    def checkRelease: T[Boolean] = T.input {
-      millw()()
-      if (GitSupport.publishVersion()._2.contains("DIRTY")) {
-        mill.api.Result.Failure("Project (git) state is dirty. Release not recommended!", Some(false))
-      } else {
-      	println(s"Version: ${GitSupport.publishVersion()._2}")
-        true
-      }
-    }
-
-    /** Test and release to Maven Central. */
-    def release(
-                 sonatypeCreds: String,
-                 release: Boolean = true
-               ): Command[Unit] = T.command {
-      if (checkRelease()) {
-        PublishModule.publishAll(
-          sonatypeCreds = sonatypeCreds,
-          release = release,
-          publishArtifacts = Tasks(
-            versions.keysIterator.toSeq.flatMap{ millApiVersion =>
-              Seq(
-                api(millApiVersion).publishArtifacts,
-                worker(millApiVersion).publishArtifacts,
-                aspectj(millApiVersion).publishArtifacts
-              )
-            }
-          ),
-          readTimeout = 600000
-        )()
-        ()
-      }
-    }
-
     /**
      * Update the millw script.
      */
