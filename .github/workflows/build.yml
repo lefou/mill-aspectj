@@ -26,7 +26,7 @@ jobs:
 
       - run: ./millw -i -j 0 __.compile
 
-      - run: ./millw -i -j 0 -k __.testCached
+      - run: ./millw -i -k __.testCached
 
       - name: Setup GPG secrets
         run: |
