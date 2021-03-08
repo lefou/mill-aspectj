@@ -5,7 +5,7 @@ import mill.define._
 import $exec.plugins
 import de.tobiasroeser.mill.aspectj._
 
-import $ivy.`org.scalatest::scalatest:3.2.4`
+import $ivy.`org.scalatest::scalatest:3.2.6`
 import org.scalatest.Assertions
 
 object aspects extends AspectjModule {
