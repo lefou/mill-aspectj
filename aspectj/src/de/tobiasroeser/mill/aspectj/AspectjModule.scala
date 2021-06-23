@@ -52,8 +52,16 @@ trait AspectjModule extends JavaModule {
     resolveDeps(aspectjToolsDeps)
   }
 
+  /** This is now deprecated, as it triggers the worker initialization even when the worker is not needed.
+   * Once initialized, the actual worker will be cached by `aspectjWorkerModule`,
+   * but only when the worker is really needed.
+   */
+  @deprecated("Use aspectjWorkerTask instead.", "mill-aspectj after 0.3.1")
   def aspectjWorker: Worker[AspectjWorker] = T.worker {
-    // new AspectjWorkerImpl(aspectjToolsClasspath().toSeq.map(_.path))
+    aspectjWorkerTask()
+  }
+
+  protected def aspectjWorkerTask: Task[AspectjWorker] = T.task {
     aspectjWorkerModule.aspectjWorkerManager().get(aspectjToolsClasspath().toSeq)
   }
 
@@ -119,7 +127,7 @@ trait AspectjModule extends JavaModule {
   }
 
   def ajcTask(extraArgs: String*): Task[CompilationResult] = T.task {
-    aspectjWorker().compile(
+    aspectjWorkerTask().compile(
       classpath = compileClasspath().toSeq.map(_.path),
       sourceDirs = allSources().map(_.path),
       options = extraArgs ++ ajcOptions(),
