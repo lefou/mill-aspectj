@@ -1,5 +1,5 @@
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest::0.4.0-5-9dce73`
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.0`
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest::0.4.1-16-63f11c`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.2`
 import mill._
 import mill.define.{Command, Module, Target, TaskModule}
 import mill.scalalib._
@@ -28,27 +28,33 @@ trait Deps {
 }
 
 
+object Deps_0_10 extends Deps {
+  override def millPlatform = "0.10.0-M4"
+  override def millVersion = "0.10.0-M4"
+  override def scalaVersion = "2.13.6"
+  override def itestVersions = Seq(millVersion)
+}
 object Deps_0_9 extends Deps {
   override def millPlatform = "0.9"
   override def millVersion = "0.9.3"
   override def scalaVersion = "2.13.6"
-  override def itestVersions = Seq("0.9.6", "0.9.5", "0.9.4", "0.9.3")
+  override def itestVersions = Seq("0.9.6", "0.9.5", "0.9.4", millVersion)
 }
 object Deps_0_7 extends Deps {
   override def millPlatform = "0.7"
   override def millVersion = "0.7.0"
   override def scalaVersion = "2.13.6"
-  override def itestVersions = Seq("0.8.0", "0.7.3", "0.7.2", "0.7.1", "0.7.0")
+  override def itestVersions = Seq("0.8.0", "0.7.3", "0.7.2", "0.7.1", millVersion)
 }
 object Deps_0_6 extends Deps {
   override def millPlatform = "0.6"
   override def millVersion = "0.6.0"
   override def scalaVersion = "2.12.13"
-  override def itestVersions = Seq("0.6.3", "0.6.2", "0.6.1", "0.6.0")
+  override def itestVersions = Seq("0.6.3", "0.6.2", "0.6.1", millVersion)
 }
 
 
-val configs = Seq(Deps_0_9,Deps_0_7,Deps_0_6)
+val configs = Seq(Deps_0_10, Deps_0_9, Deps_0_7,Deps_0_6)
 val matrix = configs.map(d => d.millPlatform -> d).toMap
 val testMatrix = configs.flatMap(d => d.itestVersions.map(_ -> d)).toMap
 
@@ -143,8 +149,13 @@ class AspectjCross(override val millPlatform: String) extends MillAjcModule {
   }
 }
 
+val testVersions = configs.flatMap(_.itestVersions)
 
-object itest extends Cross[ItestCross](configs.flatMap(_.itestVersions): _*)
+object itest extends Cross[ItestCross](testVersions: _*) with TaskModule {
+  def defaultCommandName(): String = "test"
+  def testCached: T[Seq[TestCase]] = itest(testVersions.head).testCached
+  def test(args: String*): Command[Seq[TestCase]] = itest(testVersions.head).test(args: _*)
+}
 class ItestCross(millVersion: String)  extends MillIntegrationTestModule {
   val deps: Deps = testMatrix(millVersion)
   val millPlatform =  deps.millPlatform
