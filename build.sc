@@ -1,5 +1,5 @@
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest_mill0.9:0.4.0-5-9dce73`
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version_mill0.9:0.1.0`
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest::0.4.0-5-9dce73`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.0`
 import mill._
 import mill.define.{Command, Module, Target, TaskModule}
 import mill.scalalib._
