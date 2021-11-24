@@ -46,7 +46,7 @@ class AspectjInJvmWorker() extends AspectjWorker {
       val aspect = files.count(_.ext.equalsIgnoreCase("aj"))
       (count._1 + java, count._2 + aspect)
     }
-    println(s"Compiling ${javaCount} Java sources and ${ajCount} AspectJ sources to ${dest.toIO.getPath()} ...")
+    ctx.log.errorStream.println(s"Compiling ${javaCount} Java sources and ${ajCount} AspectJ sources to ${dest.toIO.getPath()} ...")
 
     def asOptionalPath(name: String, paths: Seq[Path], filterExisting: Boolean = true): Seq[String] = {
       ctx.log.debug(s"unfiltered ${name}: ${paths.map(_.toIO.getPath()).mkString("\n  ", "\n  ", "")}")

@@ -171,7 +171,7 @@ trait AspectjIdeaSupport extends AspectjModule {
             )
         }
       case v =>
-        T.ctx().log.error(s"Unsupported Idea config version ${v}")
+        T.log.error(s"Unsupported Idea config version ${v}")
         Seq()
 
     }
@@ -204,7 +204,7 @@ trait AspectjIdeaSupport extends AspectjModule {
           )
         )
       case v =>
-        T.ctx().log.error(s"Unsupported Idea config version ${v}")
+        T.log.error(s"Unsupported Idea config version ${v}")
         Seq()
     }
   }
