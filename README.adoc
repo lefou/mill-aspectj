@@ -182,7 +182,7 @@ endif::[]
 https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
 
 
-=== mill-aspectj 0.3.2 - 2022-01-14 
+=== mill-aspectj 0.3.2 - 2022-01-16
 :version: 0.3.2
 :prev-version: 0.3.1
 :github-milestone: 3
