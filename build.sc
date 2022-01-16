@@ -1,5 +1,5 @@
 import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest::0.4.1-16-63f11c`
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.2`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.3`
 import mill._
 import mill.define.{Command, Module, Target, TaskModule}
 import mill.scalalib._
@@ -29,16 +29,16 @@ trait Deps {
 
 
 object Deps_0_10 extends Deps {
-  override def millPlatform = "0.10.0-M5"
-  override def millVersion = "0.10.0-M5" // scala-steward:off
-  override def scalaVersion = "2.13.7"
+  override def millPlatform = "0.10.0"
+  override def millVersion = "0.10" // scala-steward:off
+  override def scalaVersion = "2.13.8"
   override def itestVersions = Seq(millVersion)
 }
 object Deps_0_9 extends Deps {
   override def millPlatform = "0.9"
   override def millVersion = "0.9.3" // scala-steward:off
   override def scalaVersion = "2.13.7"
-  override def itestVersions = Seq("0.9.11", "0.9.10", "0.9.9", "0.9.8", "0.9.7", "0.9.6", "0.9.5", "0.9.4", millVersion)
+  override def itestVersions = Seq("0.9.12", "0.9.11", "0.9.10", "0.9.9", "0.9.8", "0.9.7", "0.9.6", "0.9.5", "0.9.4", millVersion)
 }
 object Deps_0_7 extends Deps {
   override def millPlatform = "0.7"

@@ -1,10 +1,10 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: 0.3.1
+:version: 0.3.2
 :projectHome: https://github.com/lefou/mill-aspectj
 :example-aspectj-version: 1.9.5
 :minimal-mill-version: 0.6.0
-:mill-platform-version: 0.9
+:mill-platform-version: 0.10
 :toc:
 :toc-placement: preamble
 
@@ -25,7 +25,8 @@ import mill.scalalib._
 import mill.define._
 
 // Load the plugin from Maven Central via ivy/coursier
-import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj:{version}`, de.tobiasroeser.mill.aspectj._
+import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj::{version}`
+import de.tobiasroeser.mill.aspectj._
 
 object main extends AspectjModule {
 
@@ -100,7 +101,8 @@ The following table shows a matrix of compatible mill and mill-aspectj versions.
 [options="header"]
 |===
 | mill-aspectj | mill
-| _{main}_ | 0.6.0 - 0.9.10, 0.10.0-M4
+| _{main}_ | 0.6.0 - 0.10.0
+| 0.3.2 | 0.6.0 - 0.10.x
 | 0.3.1 | 0.6.0 - 0.8.0
 | 0.3.0 | 0.6.0 - 0.6.3
 | 0.2.2 | 0.6.0 - 0.6.3
@@ -124,10 +126,10 @@ Please make sure to use the correct _mill platform suffix_ matching your used mi
 [options="header"]
 |===
 | mill version  | mill platform | suffix | example
-| 0.10.0-M4 | 0.10.0-M4 | _mill0.10.0-M4 | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj::{version}````
-| 0.9.3 - 0.9.x | 0.9 | `_mill0.9` | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.9:{version}````
-| 0.7.0 - 0.8.0 | 0.7 | `_mill0.7` | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.7:{version}````
-| 0.6.0 - 0.6.3 | 0.6 | `_mill0.6` | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.6:{version}````
+| 0.10.x        | 0.10 | `_mill0.10` | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj::{version}````
+| 0.9.3 - 0.9.x | 0.9  | `_mill0.9`  | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.9:{version}````
+| 0.7.0 - 0.8.0 | 0.7  | `_mill0.7`  | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.7:{version}````
+| 0.6.0 - 0.6.3 | 0.6  | `_mill0.6`  | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.6:{version}````
 |===
 
 
@@ -168,17 +170,35 @@ You can also ask question and join our discussion at the {projectHome}/discussio
 
 === {main}
 :version: main
-:prev-version: 0.3.1
-:github-milestone:
+:prev-version: 0.3.2
+:github-milestone: 4
 
-* Support for newer mill APIs
 
 _See
 ifeval::["{github-milestone}" != ""]
 https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
+
+
+=== mill-aspectj 0.3.2 - 2022-01-14 
+:version: 0.3.2
+:prev-version: 0.3.1
+:github-milestone: 3
+
+* Support for newer mill APIs
+* AspecjJ worker is only initialized when needed
+* Improved test suite
+* Various dependency version updates
+
+_See
+ifeval::["{github-milestone}" != ""]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
+and the
+endif::[]
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
+
 
 === mill-aspectj 0.3.1 - 2020-06-15
 :version: 0.3.1
@@ -194,7 +214,7 @@ ifeval::["{github-milestone}" != ""]
 https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
 
 === mill-aspectj 0.3.0 - 2020-03-04
 :version: 0.3.0
@@ -212,7 +232,7 @@ ifeval::["{github-milestone}" != ""]
 https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
 
 === mill-aspectj 0.2.2 - 2020-02-24
 :version: 0.2.2
@@ -226,7 +246,7 @@ ifeval::["{github-milestone}" != ""]
 https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
 
 === mill-aspectj 0.2.1 - 2020-02-24
 :version: 0.2.1
@@ -240,7 +260,7 @@ ifeval::["{github-milestone}" != ""]
 https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
 
 === mill-aspectj 0.2.0 - 2020-01-08
 :version: 0.2.0
@@ -255,7 +275,7 @@ ifeval::["{github-milestone}" != ""]
 https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
 and the
 endif::[]
-https://github.com/lefou/mill-aspectj/compare/{prev-version}...{version}[list of commits]_
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
 
 === mill-aspectj 0.1.0 - 2019-08-30
 
