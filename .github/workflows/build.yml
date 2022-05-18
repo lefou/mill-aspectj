@@ -20,15 +20,10 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
 
-      # set the correct mill executatble as env.millw
-      - run: echo "millw=./millw" >> $GITHUB_ENV
+      - run: ./millw -i -k __.compile + __.testCached
         if: runner.os != 'Windows'
-      - run: echo "millw=./millw.bat" >> $GITHUB_ENV
+      - run: .\millw.bat -i -k __.compile + __.testCached
         if: runner.os == 'Windows'
-
-      - run: ${{ env.millw }} -i -k -j 0 __.compile
-
-      - run: ${{ env.millw }} -i -k __.testCached
 
   publish:
     needs: [build]
