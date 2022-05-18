@@ -21,14 +21,14 @@ jobs:
           java-version: ${{ matrix.java-version }}
 
       # set the correct mill executatble as env.millw
-      - run: echo "${GITHUB_WORKSPACE}/ci" >> $GITHUB_PATH
+      - run: echo "millw=./millw" >> $GITHUB_ENV
         if: runner.os != 'Windows'
-      - run: echo "%GITHUB_WORKSPACE%\ci" >> %GITHUB_PATH%
+      - run: echo "millw=./millw.bat" >> $GITHUB_ENV
         if: runner.os == 'Windows'
 
-      - run: millw -i -k -j 0 __.compile
+      - run: ${{ env.millw }} -i -k -j 0 __.compile
 
-      - run: millw -i -k __.testCached
+      - run: ${{ env.millw }} -i -k __.testCached
 
   publish:
     needs: [build]
@@ -52,4 +52,4 @@ jobs:
           gpg --list-secret-keys --keyid-format LONG
 
       - name: Publish to Maven Central
-        run: ci/millw -i mill.scalalib.PublishModule/publishAll --sonatypeCreds "${{ secrets.SONATYPE_CREDS }}" --gpgArgs "--passphrase=${{ secrets.GPG_SECRET_KEY_PASS}},--batch,--yes,-a,-b,--pinentry-mode,loopback" --publishArtifacts __.publishArtifacts --readTimeout 600000 --awaitTimeout 600000 --release true --signed true
+        run: ./millw -i mill.scalalib.PublishModule/publishAll --sonatypeCreds "${{ secrets.SONATYPE_CREDS }}" --gpgArgs "--passphrase=${{ secrets.GPG_SECRET_KEY_PASS}},--batch,--yes,-a,-b,--pinentry-mode,loopback" --publishArtifacts __.publishArtifacts --readTimeout 600000 --awaitTimeout 600000 --release true --signed true
