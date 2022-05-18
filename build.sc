@@ -27,7 +27,6 @@ trait Deps {
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
 }
 
-
 object Deps_0_10 extends Deps {
   override def millPlatform = "0.10"
   override def millVersion = "0.10.0" // scala-steward:off
@@ -37,13 +36,24 @@ object Deps_0_10 extends Deps {
 object Deps_0_9 extends Deps {
   override def millPlatform = "0.9"
   override def millVersion = "0.9.3" // scala-steward:off
-  override def scalaVersion = "2.13.7"
-  override def itestVersions = Seq("0.9.12", "0.9.11", "0.9.10", "0.9.9", "0.9.8", "0.9.7", "0.9.6", "0.9.5", "0.9.4", millVersion)
+  override def scalaVersion = "2.13.8"
+  override def itestVersions = Seq(
+    "0.9.12",
+    "0.9.11",
+    "0.9.10",
+    "0.9.9",
+    "0.9.8",
+    "0.9.7",
+    "0.9.6",
+    "0.9.5",
+    "0.9.4",
+    millVersion
+  )
 }
 object Deps_0_7 extends Deps {
   override def millPlatform = "0.7"
   override def millVersion = "0.7.0" // scala-steward:offf
-  override def scalaVersion = "2.13.7"
+  override def scalaVersion = "2.13.8"
   override def itestVersions = Seq("0.8.0", "0.7.3", "0.7.2", "0.7.1", millVersion)
 }
 object Deps_0_6 extends Deps {
@@ -53,8 +63,7 @@ object Deps_0_6 extends Deps {
   override def itestVersions = Seq("0.6.3", "0.6.2", "0.6.1", millVersion)
 }
 
-
-val configs = Seq(Deps_0_10, Deps_0_9, Deps_0_7,Deps_0_6)
+val configs = Seq(Deps_0_10, Deps_0_9, Deps_0_7, Deps_0_6)
 val matrix = configs.map(d => d.millPlatform -> d).toMap
 val testMatrix = configs.flatMap(d => d.itestVersions.map(_ -> d)).toMap
 
@@ -84,7 +93,6 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
     )
   }
 }
-
 
 object api extends Cross[ApiCross](configs.map(_.millPlatform): _*)
 class ApiCross(override val millPlatform: String) extends MillAjcModule {
@@ -123,7 +131,7 @@ class AspectjCross(override val millPlatform: String) extends MillAjcModule {
     def testFrameworks = Seq("org.scalatest.tools.Framework")
   }
 
-  override def generatedSources: T[Seq[PathRef]] = T{
+  override def generatedSources: T[Seq[PathRef]] = T {
     super.generatedSources() ++ {
       val dest = T.ctx().dest
       val body =
@@ -138,7 +146,11 @@ class AspectjCross(override val millPlatform: String) extends MillAjcModule {
            |  /** The mill API version used to build mill-kotlin. */
            |  val buildTimeMillVersion = "${deps.millVersion}"
            |  /** The ivy dependency holding the mill aspectj worker impl. */
-           |  val millAspectjWorkerImplIvyDep = "${worker(millPlatform).pomSettings().organization}:${worker(millPlatform).artifactId()}:${worker(millPlatform).publishVersion()}"
+           |  val millAspectjWorkerImplIvyDep = "${worker(
+            millPlatform
+          ).pomSettings().organization}:${worker(millPlatform).artifactId()}:${worker(
+            millPlatform
+          ).publishVersion()}"
            |}
            |""".stripMargin
 
@@ -156,31 +168,45 @@ object itest extends Cross[ItestCross](testVersions: _*) with TaskModule {
   def testCached: T[Seq[TestCase]] = itest(testVersions.head).testCached
   def test(args: String*): Command[Seq[TestCase]] = itest(testVersions.head).test(args: _*)
 }
-class ItestCross(millVersion: String)  extends MillIntegrationTestModule {
+class ItestCross(millVersion: String) extends MillIntegrationTestModule {
   val deps: Deps = testMatrix(millVersion)
-  val millPlatform =  deps.millPlatform
+  val millPlatform = deps.millPlatform
   override def millSourcePath: Path = super.millSourcePath / os.up
   override def millTestVersion = millVersion
   override def pluginsUnderTest = Seq(aspectj(millPlatform))
   override def temporaryIvyModules = Seq(api(millPlatform), worker(millPlatform))
 
   override def testTargets: T[Seq[String]] = Seq("--color", "false", "verify")
-
+  override def testCases = T{
+    super.testCases().filter { tc =>
+      val versionPrefix = mill.BuildInfo.millVersion.substring(0, 3)
+      if (tc.path.last == "scala+ajc" && Seq("0.6", "0.7", "0.8", "0.9").contains(versionPrefix)) {
+        T.log.errorStream.println(s"Skipping test '${tc.path.last}' for Mill version ${mill.BuildInfo.millVersion} < 0.10.0")
+        false
+      } else true
+    }
+  }
 }
 
 /** Some convenience targets. */
 object P extends Module {
-    /**
-     * Update the millw script.
-     */
-    def millw() = T.command {
-      val target = mill.modules.Util.download("https://raw.githubusercontent.com/lefou/millw/master/millw")
-      val millw = baseDir / "millw"
-      val res = os.proc(
-        "sed", s"""s,\\(^DEFAULT_MILL_VERSION=\\).*$$,\\1${scala.util.matching.Regex.quoteReplacement(rtMillVersion())},""",
-        target.path.toIO.getAbsolutePath()).call(cwd = baseDir)
-      os.write.over(millw, res.out.text())
-      os.perms.set(millw, os.perms(millw) + java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE)
-      target
-    }
+
+  /**
+   * Update the millw script.
+   */
+  def millw() = T.command {
+    val target =
+      mill.modules.Util.download("https://raw.githubusercontent.com/lefou/millw/master/millw")
+    val millw = baseDir / "millw"
+    val res = os.proc(
+      "sed",
+      s"""s,\\(^DEFAULT_MILL_VERSION=\\).*$$,\\1${scala.util.matching.Regex.quoteReplacement(
+          rtMillVersion()
+        )},""",
+      target.path.toIO.getAbsolutePath()
+    ).call(cwd = baseDir)
+    os.write.over(millw, res.out.text())
+    os.perms.set(millw, os.perms(millw) + java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE)
+    target
+  }
 }

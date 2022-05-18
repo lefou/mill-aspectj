@@ -24,6 +24,8 @@ trait AspectjModule extends JavaModule {
    */
   def aspectjVersion: T[String]
 
+  def aspectjCompileMode: CompileMode = CompileMode.FullSources
+
   /**
    * The compile and runtime dependencies.
    * Contains by default the `aspectrt.jar` which is resolved via ivy (`ivy"org.aspectj:aspectrt:$${aspectjVersion()}"`).
@@ -52,7 +54,8 @@ trait AspectjModule extends JavaModule {
     resolveDeps(aspectjToolsDeps)
   }
 
-  /** This is now deprecated, as it triggers the worker initialization even when the worker is not needed.
+  /**
+   * This is now deprecated, as it triggers the worker initialization even when the worker is not needed.
    * Once initialized, the actual worker will be cached by `aspectjWorkerModule`,
    * but only when the worker is really needed.
    */
@@ -100,7 +103,7 @@ trait AspectjModule extends JavaModule {
   }
 
   /**
-   * Effective aspect path (`ajc -inpath`).
+   * Effective aspect path (`ajc -aspectpath`).
    * In most cases, it is enough to use `aspectModuleDeps` and `resolvedAspectIvyDeps`.
    */
   def effectiveAspectPath: T[Seq[PathRef]] = T {
@@ -126,13 +129,41 @@ trait AspectjModule extends JavaModule {
     ajcTask()()
   }
 
+  def ajcSourceFiles: T[Seq[PathRef]] = T {
+    val exts = aspectjCompileMode match {
+      case CompileMode.OnlyAjSources => Seq("aj")
+      case CompileMode.FullSources => Seq("java", "aj")
+    }
+    findSourceFiles(allSources(), exts).map(PathRef(_))
+  }
+
+  private def finalInPath: T[Seq[PathRef]] = aspectjCompileMode match {
+    case CompileMode.OnlyAjSources => T {
+        weavePath() ++ Seq(super.compile().classes)
+      }
+    case CompileMode.FullSources => T {
+        weavePath()
+      }
+  }
+
+  // copy of mill.scalalib.Lib.findSourceFiles, as it is not present in Mill 0.9 and older
+  private def findSourceFiles(sources: Seq[PathRef], extensions: Seq[String]): Seq[os.Path] = {
+    def isHiddenFile(path: os.Path) = path.last.startsWith(".")
+    for {
+      root <- sources
+      if os.exists(root.path)
+      path <- (if (os.isDir(root.path)) os.walk(root.path) else Seq(root.path))
+      if os.isFile(path) && (extensions.exists(path.ext == _) && !isHiddenFile(path))
+    } yield path
+  }
+
   def ajcTask(extraArgs: String*): Task[CompilationResult] = T.task {
     aspectjWorkerTask().compile(
       classpath = compileClasspath().toSeq.map(_.path),
-      sourceDirs = allSources().map(_.path),
+      sourceFiles = ajcSourceFiles().map(_.path),
       options = extraArgs ++ ajcOptions(),
       aspectPath = effectiveAspectPath().toSeq.map(_.path),
-      inPath = weavePath().map(_.path),
+      inPath = finalInPath().map(_.path),
       allowConcurrentRuns = aspectjAllowConcurrentRuns
     )
   }
@@ -161,7 +192,10 @@ trait AspectjIdeaSupport extends AspectjModule {
               IdeaConfigFile(
                 name = "compiler.xml",
                 component = "AjcSettings",
-                config = Seq(Element("option", Map("name" -> "ajcPath", "value" -> toolsPath.head.path.toIO.getPath())))
+                config = Seq(Element(
+                  "option",
+                  Map("name" -> "ajcPath", "value" -> toolsPath.head.path.toIO.getPath())
+                ))
               ),
               IdeaConfigFile(
                 name = "compiler.xml",
@@ -183,24 +217,44 @@ trait AspectjIdeaSupport extends AspectjModule {
       case 4 =>
         val aspectPath =
           resolvedAspectIvyDeps().toSeq.map { depPathRef =>
-            Element("projectLibrary", childs = Seq(
-              Element("option", Map("name" -> "name", "value" -> depPathRef.path.last))
-            ))
+            Element(
+              "projectLibrary",
+              childs = Seq(
+                Element("option", Map("name" -> "name", "value" -> depPathRef.path.last))
+              )
+            )
           } ++ aspectModuleDeps.map { module =>
-            Element("module", childs = Seq(
-              Element("option", Map("name" -> "name", "value" -> GenIdeaImpl.moduleName(module.millModuleSegments)))
-            ))
+            Element(
+              "module",
+              childs = Seq(
+                Element(
+                  "option",
+                  Map(
+                    "name" -> "name",
+                    "value" -> GenIdeaImpl.moduleName(module.millModuleSegments)
+                  )
+                )
+              )
+            )
           }
 
         Seq(
-          JavaFacet("AspectJ", "AspectJ", config =
-            Element("configuration", childs = if(aspectPath.isEmpty) Seq() else Seq(
+          JavaFacet(
+            "AspectJ",
+            "AspectJ",
+            config =
               Element(
-                "option",
-                attributes = Map("name" -> "aspectPath"),
-                childs = aspectPath
+                "configuration",
+                childs =
+                  if (aspectPath.isEmpty) Seq()
+                  else Seq(
+                    Element(
+                      "option",
+                      attributes = Map("name" -> "aspectPath"),
+                      childs = aspectPath
+                    )
+                  )
               )
-            ))
           )
         )
       case v =>

@@ -9,7 +9,7 @@ trait AspectjWorker {
   /**
    * Invokes the Aspectj compiler
    * @param classpath
-   * @param sourceDirs
+   * @param sourceFiles
    * @param options
    * @param aspectPath
    * @param inPath
@@ -19,7 +19,7 @@ trait AspectjWorker {
    */
   def compile(
     classpath: Seq[Path],
-    sourceDirs: Seq[Path],
+    sourceFiles: Seq[Path],
     options: Seq[String],
     aspectPath: Seq[Path],
     inPath: Seq[Path],

@@ -12,27 +12,27 @@ import os.Path
 class AspectjInJvmWorker() extends AspectjWorker {
 
   override def compile(
-    classpath: Seq[Path],
-    sourceDirs: Seq[Path],
-    options: Seq[String],
-    aspectPath: Seq[Path],
-    inPath: Seq[Path],
-    allowConcurrentRuns: Boolean
+      classpath: Seq[Path],
+      sourceFiles: Seq[Path],
+      options: Seq[String],
+      aspectPath: Seq[Path],
+      inPath: Seq[Path],
+      allowConcurrentRuns: Boolean
   )(implicit ctx: Ctx): Result[CompilationResult] = {
     if (allowConcurrentRuns) {
-      internalCompile(classpath, sourceDirs, options, aspectPath, inPath)
+      internalCompile(classpath, sourceFiles, options, aspectPath, inPath)
     } else synchronized {
       // synchronized: AspectJ compiler seems to fail unpredictably with ThreadDeath when run concurrently
-      internalCompile(classpath, sourceDirs, options, aspectPath, inPath)
+      internalCompile(classpath, sourceFiles, options, aspectPath, inPath)
     }
   }
 
   def internalCompile(
-    classpath: Seq[Path],
-    sourceDirs: Seq[Path],
-    options: Seq[String],
-    aspectPath: Seq[Path],
-    inPath: Seq[Path]
+      classpath: Seq[Path],
+      sourceFiles: Seq[Path],
+      options: Seq[String],
+      aspectPath: Seq[Path],
+      inPath: Seq[Path]
   )(implicit ctx: Ctx): Result[CompilationResult] = {
     val dest = ctx.dest
     ctx.log.debug(s"Destination: ${dest}")
@@ -40,16 +40,20 @@ class AspectjInJvmWorker() extends AspectjWorker {
     val classesDir = dest / "classes"
     os.makeDir.all(classesDir)
 
-    val (javaCount, ajCount) = sourceDirs.filter(os.isDir).foldLeft(0 -> 0) { (count, d) =>
-      val files = os.walk(d).filter(os.isFile)
-      val java = files.count(_.ext.equalsIgnoreCase("java"))
-      val aspect = files.count(_.ext.equalsIgnoreCase("aj"))
-      (count._1 + java, count._2 + aspect)
-    }
-    ctx.log.errorStream.println(s"Compiling ${javaCount} Java sources and ${ajCount} AspectJ sources to ${dest.toIO.getPath()} ...")
+    val javaCount = sourceFiles.count(_.ext.equalsIgnoreCase("java"))
+    val ajCount = sourceFiles.count(_.ext.equalsIgnoreCase("aj"))
+    ctx.log.errorStream.println(
+      s"Compiling ${javaCount} Java sources and ${ajCount} AspectJ sources to ${dest.toString()} ..."
+    )
 
-    def asOptionalPath(name: String, paths: Seq[Path], filterExisting: Boolean = true): Seq[String] = {
-      ctx.log.debug(s"unfiltered ${name}: ${paths.map(_.toIO.getPath()).mkString("\n  ", "\n  ", "")}")
+    def asOptionalPath(
+        name: String,
+        paths: Seq[Path],
+        filterExisting: Boolean = true
+    ): Seq[String] = {
+      ctx.log.debug(
+        s"unfiltered ${name}: ${paths.map(_.toIO.getPath()).mkString("\n  ", "\n  ", "")}"
+      )
       val ps = if (filterExisting) paths.filter(os.exists) else paths
       if (ps.isEmpty) Seq()
       else Seq(name, ps.map(_.toIO.getPath()).mkString(File.pathSeparator))
@@ -58,25 +62,20 @@ class AspectjInJvmWorker() extends AspectjWorker {
     val ajcArgs = Seq(
       // explicit options,
       options,
+      sourceFiles.map(_.toString()),
       // classpath
       asOptionalPath("-cp", classpath),
       // aspectPath
       asOptionalPath("-aspectpath", aspectPath),
       // inPath
       asOptionalPath("-inpath", inPath),
-      // sourceDirs
-      asOptionalPath("-sourceroots", sourceDirs),
       // destination dir
       Seq("-d", classesDir.toIO.getPath())
     ).flatten
 
     ctx.log.debug(s"ajc args: ${ajcArgs.mkString(" ")}")
-    val prevSecManager = System.getSecurityManager()
-
-    //    val messageHolder = new MessageHandler()
 
     val ajcMain = new Main()
-    //    ajcMain.setHolder(messageHolder)
     ajcMain.runMain(ajcArgs.toArray[String], false)
 
     val analysisFile = dest / "analysis.dummy"

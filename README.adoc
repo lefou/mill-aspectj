@@ -90,6 +90,17 @@ The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following 
 `def ajcHelp: Command[Unit]`::
   Shows the help of the AspectJ compiler (`ajc -help`).
 
+== Mixing in the Aspectj-Compiler in an existing Compiler chains (aka Scala support)
+
+If you override the `def aspectjCompileMode` to return `CompileMode.OnlyAjSources`, you can chain the AspectJ compilr after another compiler.
+
+In this setup, the AspectJ compiler only weave-compiles
+already compiled classes.
+Only `*.aj` files are fed as source files, all other
+inputs (the already compiled classes) are fed via the `-inpath` option.
+
+With this setup, we can even compile-time weave Scala (and probably also Kotlin) classes. But this only works reliably with Mill 0.10.0 and newer.
+
 == Version Compatibility Matrix
 
 Mill is still in active development, and has no stable API yet.
@@ -172,6 +183,8 @@ You can also ask question and join our discussion at the {projectHome}/discussio
 :version: main
 :prev-version: 0.3.2
 :github-milestone: 4
+
+* New `aspectjCompileMode` config option, to use Aspectj compiler to weave-compile already compiled classes.
 
 
 _See
