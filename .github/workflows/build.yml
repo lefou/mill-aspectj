@@ -5,7 +5,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         java-version: [8, 11]
 
     runs-on: ${{ matrix.os }}
@@ -20,13 +20,19 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
 
-      - run: ./millw -i -j 0 __.compile
+      # set the correct mill executatble as env.millw
+      - run: echo "millw=./millw" >> $GITHUB_ENV
+        if: runner.os != 'Windows'
+      - run: echo "millw=./millw.bat" >> $GITHUB_ENV
+        if: runner.os == 'Windows'
 
-      - run: ./millw -i -k __.testCached
+      - run: ${{ env.millw }} -i -k -j 0 __.compile
+
+      - run: ${{ env.millw }} -i -k __.testCached
 
   publish:
     needs: [build]
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+    if: github.repository == 'lefou/mill-aspectj' && github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
