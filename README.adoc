@@ -13,7 +13,7 @@ ifdef::env-github[]
 image:https://github.com/lefou/mill-aspectj/workflows/.github/workflows/build.yml/badge.svg["GitHub Actions Build Status", link="https://github.com/lefou/mill-aspectj/actions"]
 endif::[]
 
-Documentation for mill-aspectj, a mill plugin to support the https://projects.eclipse.org/projects/tools.aspectj[AspectJ language and compiler].
+Documentation for mill-aspectj, a mill plugin to support the https://github.com/eclipse/org.aspectj[AspectJ language and compiler].
 
 == Quickstart
 
@@ -218,7 +218,7 @@ endif::[]
 https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
 
 
-=== 0.4.0 - 2022-05-20
+=== mill-aspectj 0.4.0 - 2022-05-20
 :version: 0.4.0
 :prev-version: 0.3.2
 :github-milestone: 4
