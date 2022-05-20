@@ -2,7 +2,7 @@
 = mill-aspectj - AspectJ compiler support for mill
 :version: 0.3.2
 :projectHome: https://github.com/lefou/mill-aspectj
-:example-aspectj-version: 1.9.5
+:example-aspectj-version: 1.9.9.1
 :minimal-mill-version: 0.6.0
 :mill-platform-version: 0.10
 :toc:

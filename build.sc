@@ -124,40 +124,40 @@ class AspectjCross(override val millPlatform: String) extends MillAjcModule {
     deps.millScalalib
   )
 
-  object test extends Tests {
-    override def ivyDeps = Agg(
-      deps.scalaTest
-    )
-    def testFrameworks = Seq("org.scalatest.tools.Framework")
+  def versionsFile: T[PathRef] = T {
+    val workerStr = s"${worker(
+        millPlatform
+      ).pomSettings().organization}:${worker(millPlatform).artifactId()}:${worker(
+        millPlatform
+      ).publishVersion()}"
+    val body =
+      s"""package de.tobiasroeser.mill.aspectj
+         |
+         |/**
+         | * Build-time generated versions file.
+         | */
+         |object Versions {
+         |  /** The mill-aspectj version. */
+         |  val millAspectjVersion = "${publishVersion()}"
+         |  /** The mill API version used to build mill-kotlin. */
+         |  val buildTimeMillVersion = "${deps.millVersion}"
+         |  /** The ivy dependency holding the mill aspectj worker impl. */
+         |  val millAspectjWorkerImplIvyDep = "${workerStr}"
+         |}
+         |""".stripMargin
+
+    os.write(T.dest / "Versions.scala", body)
+    PathRef(T.dest)
   }
 
   override def generatedSources: T[Seq[PathRef]] = T {
-    super.generatedSources() ++ {
-      val dest = T.ctx().dest
-      val body =
-        s"""package de.tobiasroeser.mill.aspectj
-           |
-           |/**
-           | * Build-time generated versions file.
-           | */
-           |object Versions {
-           |  /** The mill-aspectj version. */
-           |  val millAspectjVersion = "${publishVersion()}"
-           |  /** The mill API version used to build mill-kotlin. */
-           |  val buildTimeMillVersion = "${deps.millVersion}"
-           |  /** The ivy dependency holding the mill aspectj worker impl. */
-           |  val millAspectjWorkerImplIvyDep = "${worker(
-            millPlatform
-          ).pomSettings().organization}:${worker(millPlatform).artifactId()}:${worker(
-            millPlatform
-          ).publishVersion()}"
-           |}
-           |""".stripMargin
+    super.generatedSources() ++ Seq(versionsFile())
+  }
 
-      os.write(dest / "Versions.scala", body)
-
-      Seq(PathRef(dest))
-    }
+  object test extends Tests with TestModule.ScalaTest {
+    override def ivyDeps = Agg(
+      deps.scalaTest
+    )
   }
 }
 
@@ -177,11 +177,13 @@ class ItestCross(millVersion: String) extends MillIntegrationTestModule {
   override def temporaryIvyModules = Seq(api(millPlatform), worker(millPlatform))
 
   override def testTargets: T[Seq[String]] = Seq("--color", "false", "verify")
-  override def testCases = T{
+  override def testCases = T {
     super.testCases().filter { tc =>
       val versionPrefix = mill.BuildInfo.millVersion.substring(0, 3)
       if (tc.path.last == "scala+ajc" && Seq("0.6", "0.7", "0.8", "0.9").contains(versionPrefix)) {
-        T.log.errorStream.println(s"Skipping test '${tc.path.last}' for Mill version ${mill.BuildInfo.millVersion} < 0.10.0")
+        T.log.errorStream.println(
+          s"Skipping test '${tc.path.last}' for Mill version ${mill.BuildInfo.millVersion} < 0.10.0"
+        )
         false
       } else true
     }

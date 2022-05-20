@@ -10,7 +10,7 @@ import org.scalatest.Assertions
 
 object main extends AspectjModule {
 
-  def aspectjVersion = "1.9.5"
+  def aspectjVersion = "1.9.9.1"
 
   def ajcOptions = Seq("-1.8")
 
