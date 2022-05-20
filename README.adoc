@@ -1,8 +1,9 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: 0.3.2
+:version: 0.4.0
 :projectHome: https://github.com/lefou/mill-aspectj
 :example-aspectj-version: 1.9.9.1
+:example-scala-version: 2.13.8
 :minimal-mill-version: 0.6.0
 :mill-platform-version: 0.10
 :toc:
@@ -17,6 +18,7 @@ Documentation for mill-aspectj, a mill plugin to support the https://projects.ec
 == Quickstart
 
 Mill version {minimal-mill-version} or newer is required.
+Using the latest stable Mill release is recommended.
 
 [source,scala,subs="attributes,verbatim"]
 ----
@@ -31,7 +33,7 @@ import de.tobiasroeser.mill.aspectj._
 object main extends AspectjModule {
 
   // Select the AspectJ version
-  def aspectjVersion = T{ "{example-aspectj-version}" }
+  def aspectjVersion = "{example-aspectj-version}"
 
   // Set AspectJ options, e.g. the language level and annotation processor
   // Run `mill main.ajcHelp` to get a list of supported options
@@ -90,21 +92,43 @@ The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following 
 `def ajcHelp: Command[Unit]`::
   Shows the help of the AspectJ compiler (`ajc -help`).
 
-== Mixing in the Aspectj-Compiler in an existing Compiler chains (aka Scala support)
+== Mixing in the Aspectj-Compiler in an existing Compiler chain (aka Scala support)
 
-If you override the `def aspectjCompileMode` to return `CompileMode.OnlyAjSources`, you can chain the AspectJ compilr after another compiler.
+If you override the `def aspectjCompileMode` to return `CompileMode.OnlyAjSources`, you can chain the AspectJ compiler after another compiler.
 
-In this setup, the AspectJ compiler only weave-compiles
-already compiled classes.
-Only `*.aj` files are fed as source files, all other
+In this setup, the AspectJ compiler will not compile your Java source files but weave-compiles the already compiled classes.
+Only the `*.aj` files (if any) are fed as source files. All other
 inputs (the already compiled classes) are fed via the `-inpath` option.
 
-With this setup, we can even compile-time weave Scala (and probably also Kotlin) classes. But this only works reliably with Mill 0.10.0 and newer.
+With this setup, we can even compile-time weave Scala (and probably also Kotlin or other JVM language) classes. But this only works reliably with Mill 0.10.0 and newer.
+
+.Example for chained compilation setup: First Zinc, then AspectJ
+[source,scala,subs="attributes,verbatim"]
+----
+import mill._
+import mill.scalalib._
+import mill.define._
+
+// Load the plugin from Maven Central via ivy/coursier
+import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj::{version}`
+import de.tobiasroeser.mill.aspectj._
+
+object main extends ScalaModule with AspectjModule {
+
+  def scalaVersion = "{example-scala-version}"
+
+  // Select the AspectJ version
+  def aspectjVersion = "{example-aspectj-version}"
+
+  // Set AspectJ options, e.g. the language level and annotation processor
+  // Run `mill main.ajcHelp` to get a list of supported options
+  def ajcOptions = Seq("-8", "-proc:none")
+
+  // other settings
+}
+----
 
 == Version Compatibility Matrix
-
-Mill is still in active development, and has no stable API yet.
-Hence, not all mill-aspectj versions work with every mill version.
 
 The following table shows a matrix of compatible mill and mill-aspectj versions.
 
@@ -113,6 +137,7 @@ The following table shows a matrix of compatible mill and mill-aspectj versions.
 |===
 | mill-aspectj | mill
 | _{main}_ | 0.6.0 - 0.10.0
+| 0.4.0 | 0.6.0 - 0.10.x
 | 0.3.2 | 0.6.0 - 0.10.x
 | 0.3.1 | 0.6.0 - 0.8.0
 | 0.3.0 | 0.6.0 - 0.6.3
@@ -162,8 +187,8 @@ Mill::
 Me::
 +
 --
-I am https://github.com/lefou/[Tobias Roeser], a professional software developer and love to do open source.
-I'm actively developing and maintaining mill as well as https://github.com/lefou?utf8=%E2%9C%93&tab=repositories&q=topic%3Amill&type=&language=[several mill plugins].
+I am https://github.com/lefou/[Tobias Roeser], a professional software developer and love to create open source software.
+I'm actively developing and maintaining Mill as well as https://github.com/lefou?utf8=%E2%9C%93&tab=repositories&q=topic%3Amill&type=&language=[several mill plugins].
 
 If you like my work, please star it on GitHub. You can also support me via https://github.com/sponsors/lefou[GitHub Sponsors].
 --
@@ -181,11 +206,25 @@ You can also ask question and join our discussion at the {projectHome}/discussio
 
 === {main}
 :version: main
+:prev-version: 0.4.0
+:github-milestone: 5
+
+
+_See
+ifeval::["{github-milestone}" != ""]
+https://github.com/lefou/mill-aspectj/milestone/{github-milestone}?closed=1[milestone {version}]
+and the
+endif::[]
+https://github.com/lefou/mill-aspectj/compare/{prev-version}\...{version}[list of commits]_
+
+
+=== 0.4.0 - 2022-05-20
+:version: 0.4.0
 :prev-version: 0.3.2
 :github-milestone: 4
 
-* New `aspectjCompileMode` config option, to use Aspectj compiler to weave-compile already compiled classes.
-
+* Support chained compilation to run AspectJ compiler after Zinc or other compilers
+* New `aspectjCompileMode` config option, to configure Aspectj compiler behavior, e.g. to weave-compile already compiled classes.
 
 _See
 ifeval::["{github-milestone}" != ""]
