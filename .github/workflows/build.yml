@@ -16,9 +16,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java-version }}
+          distribution: temurin
 
       - run: ./millw -i -k __.compile + __.testCached
         if: runner.os != 'Windows'
@@ -36,9 +37,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-java@v1
+      - uses: actions/setup-java@v3
         with:
           java-version: 8
+          distribution: temurin
 
       - name: Setup GPG secrets
         run: |
