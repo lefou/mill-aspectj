@@ -4,7 +4,7 @@ import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
 
 // imports
 import mill._
-import mill.define.{Command, Module, Target, TaskModule}
+import mill.define.{Command, Module, Sources, Target, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
 import de.tobiasroeser.mill.integrationtest._
@@ -30,6 +30,12 @@ trait Deps {
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
 }
 
+object Deps_0_11 extends Deps {
+  override def millPlatform = millVersion // only valid for exact milestone versions
+  override def millVersion = "0.11.0-M2" // select only exact milestones
+  override def scalaVersion = "2.13.10"
+  override def itestVersions = Seq(millVersion)
+}
 object Deps_0_10 extends Deps {
   override def millPlatform = "0.10"
   override def millVersion = "0.10.0" // scala-steward:off
@@ -66,7 +72,7 @@ object Deps_0_6 extends Deps {
   override def itestVersions = Seq("0.6.3", "0.6.2", "0.6.1", millVersion)
 }
 
-val configs = Seq(Deps_0_10, Deps_0_9, Deps_0_7, Deps_0_6)
+val configs = Seq(Deps_0_11, Deps_0_10, Deps_0_9, Deps_0_7, Deps_0_6)
 val matrix = configs.map(d => d.millPlatform -> d).toMap
 val testMatrix = configs.flatMap(d => d.itestVersions.map(_ -> d)).toMap
 
@@ -74,6 +80,13 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
   def millPlatform: String
   def deps: Deps = matrix(millPlatform)
   def crossScalaVersion = deps.scalaVersion
+  override def sources: Sources = T.sources(
+    millSourcePath / "src",
+    if (Seq(Deps_0_6, Deps_0_7, Deps_0_9, Deps_0_10).forall(d => d.millPlatform != millPlatform))
+      millSourcePath / s"src-${millPlatform.split("[.]").take(2).mkString(".")}"
+    else
+      millSourcePath / s"src-0.10-"
+  )
 
   override def ivyDeps = T {
     Agg(ivy"${scalaOrganization()}:scala-library:${crossScalaVersion}")
@@ -95,6 +108,8 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
       developers = Seq(Developer("lefou", "Tobias Roeser", "https.//github.com/lefou"))
     )
   }
+
+  override def skipIdea: Boolean = deps != configs.head
 }
 
 object api extends Cross[ApiCross](configs.map(_.millPlatform): _*)
