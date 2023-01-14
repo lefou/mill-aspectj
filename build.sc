@@ -1,5 +1,8 @@
-import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest::0.6.0`
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
+// plugins
+import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest::0.6.1`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.2.0`
+
+// imports
 import mill._
 import mill.define.{Command, Module, Target, TaskModule}
 import mill.scalalib._
@@ -179,7 +182,7 @@ class ItestCross(millVersion: String) extends MillIntegrationTestModule {
   override def testTargets: T[Seq[String]] = Seq("--color", "false", "verify")
   override def testCases = T {
     super.testCases().filter { tc =>
-      val versionPrefix = mill.BuildInfo.millVersion.substring(0, 3)
+      val versionPrefix = millVersion.split("[.]").take(2).mkString(".")
       if (tc.path.last == "scala+ajc" && Seq("0.6", "0.7", "0.8", "0.9").contains(versionPrefix)) {
         T.log.errorStream.println(
           s"Skipping test '${tc.path.last}' for Mill version ${mill.BuildInfo.millVersion} < 0.10.0"
