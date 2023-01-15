@@ -20,7 +20,7 @@ trait Deps {
   def scalaVersion: String
   def itestVersions: Seq[String]
 
-  val aspectjTools = ivy"org.aspectj:aspectjtools:1.9.5"
+  val aspectjTools = ivy"org.aspectj:aspectjtools:1.9.19"
   val logbackClassic = ivy"ch.qos.logback:logback-classic:1.1.3"
   val millMain = ivy"com.lihaoyi::mill-main:${millVersion}"
   val millMainApi = ivy"com.lihaoyi::mill-main-api:${millVersion}"
