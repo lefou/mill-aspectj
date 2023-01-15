@@ -5,7 +5,7 @@ import mill.define._
 import $exec.plugins
 import de.tobiasroeser.mill.aspectj._
 
-import $ivy.`org.scalatest::scalatest:3.2.10`
+import $ivy.`org.scalatest::scalatest:3.2.15`
 import org.scalatest.Assertions
 
 object main extends AspectjModule {
@@ -25,15 +25,16 @@ object main extends AspectjModule {
 }
 
 def verify(): Command[Unit] =
-  if(System.getProperty("java.specification.version").startsWith("1.")) T.command {
+  if (System.getProperty("java.specification.version").startsWith("1.")) T.command {
     // Ajc 1.8.10 doesn't work with Java9+
-    val A = new Assertions{}
+    val A = new Assertions {}
     import A._
 
     val cr = main.compile()
     main.test.test()()
     ()
-  } else T.command {
+  }
+  else T.command {
     println("Skipping test with ajc 1.8.10 on Java9+")
     ()
   }
