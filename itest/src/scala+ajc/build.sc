@@ -10,7 +10,7 @@ import org.scalatest.Assertions
 
 object main extends ScalaModule with AspectjModule {
 
-  def scalaVersion = "2.13.8"
+  def scalaVersion = "2.13.10"
   def aspectjVersion = "1.9.5"
   def aspectjCompileMode = CompileMode.OnlyAjSources
 
@@ -31,7 +31,7 @@ object main extends ScalaModule with AspectjModule {
 
 def verify(): Command[Unit] = T.command {
 
-  val A = new Assertions{}
+  val A = new Assertions {}
   import A._
 
   val cr = main.compile()
