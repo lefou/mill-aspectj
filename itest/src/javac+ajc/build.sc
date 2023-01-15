@@ -5,7 +5,7 @@ import mill.define._
 import $exec.plugins
 import de.tobiasroeser.mill.aspectj._
 
-import $ivy.`org.scalatest::scalatest:3.2.10`
+import $ivy.`org.scalatest::scalatest:3.2.15`
 import org.scalatest.Assertions
 
 object main extends AspectjModule {
@@ -29,7 +29,7 @@ object main extends AspectjModule {
 
 def verify(): Command[Unit] = T.command {
 
-  val A = new Assertions{}
+  val A = new Assertions {}
   import A._
 
   val cr = main.compile()

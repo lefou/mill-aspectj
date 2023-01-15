@@ -5,7 +5,7 @@ import mill.define._
 import $exec.plugins
 import de.tobiasroeser.mill.aspectj._
 
-import $ivy.`org.scalatest::scalatest:3.2.10`
+import $ivy.`org.scalatest::scalatest:3.2.15`
 import org.scalatest.Assertions
 
 object aspects extends AspectjModule {
@@ -23,9 +23,9 @@ object main extends AspectjModule {
   def ajcOptions = Seq("-8")
 
   def moduleDeps = super.moduleDeps ++ Seq(aspects)
-  
+
   def aspectModuleDeps = Seq(aspects)
-  
+
   object test extends Tests {
     def javacOptions = Seq("-source", "1.8", "-target", "1.8")
     def testFrameworks = Seq("com.novocode.junit.JUnitFramework")
@@ -37,10 +37,9 @@ object main extends AspectjModule {
 
 }
 
-
 def verify(): Command[Unit] = T.command {
 
-  val A = new Assertions{}
+  val A = new Assertions {}
   import A._
 
   val cr = main.compile()
