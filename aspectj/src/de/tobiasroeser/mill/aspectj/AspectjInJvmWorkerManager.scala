@@ -17,19 +17,22 @@ class AspectjInJvmWorkerManager(ctx: Ctx.Log) extends AspectjWorkerManager {
         w -> count
       case None =>
         ctx.log.debug(s"Creating Classloader with classpath: [${toolsClasspath}]")
-        val classLoader = new URLClassLoader(toolsClasspath.map(_.path.toNIO.toUri().toURL()).toArray[URL], getClass().getClassLoader())
-
+        val classLoader = new URLClassLoader(
+          toolsClasspath.map(_.path.toNIO.toUri().toURL()).toArray[URL],
+          getClass().getClassLoader()
+        )
 
         ctx.log.debug(s"Creating AspectjWorker for classpath: ${toolsClasspath}")
         val className = classOf[AspectjWorker].getPackage().getName() + ".impl.AspectjInJvmWorker"
         val impl = classLoader.loadClass(className)
         val worker = impl.newInstance().asInstanceOf[AspectjWorker]
-        if(worker.getClass().getClassLoader() != classLoader) {
+        if (worker.getClass().getClassLoader() != classLoader) {
           ctx.log.error(
             """Worker not loaded from worker classloader.
-              |You should not add the mill-aspectj-worker JAR to the mill build classpath""".stripMargin)
+              |You should not add the mill-aspectj-worker JAR to the mill build classpath""".stripMargin
+          )
         }
-        if(worker.getClass().getClassLoader() == classOf[AspectjWorker].getClassLoader()) {
+        if (worker.getClass().getClassLoader() == classOf[AspectjWorker].getClassLoader()) {
           ctx.log.error("Worker classloader used to load interface and implementation")
         }
         worker -> 0

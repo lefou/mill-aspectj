@@ -29,7 +29,7 @@ object main extends AspectjModule {
 
 def verify(): Command[Unit] = T.command {
 
-  val A = new Assertions{}
+  val A = new Assertions {}
   import A._
 
   val cr = main.compile()
