@@ -18,11 +18,11 @@ trait AspectjWorker {
    * @return
    */
   def compile(
-    classpath: Seq[Path],
-    sourceFiles: Seq[Path],
-    options: Seq[String],
-    aspectPath: Seq[Path],
-    inPath: Seq[Path],
-    allowConcurrentRuns: Boolean
+      classpath: Seq[Path],
+      sourceFiles: Seq[Path],
+      options: Seq[String],
+      aspectPath: Seq[Path],
+      inPath: Seq[Path],
+      allowConcurrentRuns: Boolean
   )(implicit ctx: Ctx): Result[CompilationResult]
 }
