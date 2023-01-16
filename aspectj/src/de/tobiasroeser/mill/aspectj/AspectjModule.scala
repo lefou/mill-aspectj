@@ -16,7 +16,7 @@ import de.tobiasroeser.mill.aspectj.worker.AspectjWorker
 import mill.scalalib.GenIdeaModule.{Element, IdeaConfigFile, JavaFacet}
 import mill.api.{Ctx, Loose}
 
-trait AspectjModule extends JavaModule {
+trait AspectjModule extends JavaModule with AspectjModulePlatform {
   def aspectjWorkerModule: AspectjWorkerModule = AspectjWorkerModule
 
   /**
@@ -39,19 +39,11 @@ trait AspectjModule extends JavaModule {
    * The ivy dependencies representing the aspectj compiler classes, which is typically a `aspectjtools.jar`.
    * Default to `ivy"org.aspectj:aspectjtools:$${aspectjVersion()}"`.
    */
-  def aspectjToolsDeps: T[Agg[Dep]] = T {
+  override def aspectjToolsDeps: T[Agg[Dep]] = T {
     Agg(
       ivy"org.aspectj:aspectjtools:${aspectjVersion()}",
       ivy"${Versions.millAspectjWorkerImplIvyDep}"
     )
-  }
-
-  /**
-   * The aspectj compiler classpath.
-   * By default resolved from `aspectjToolsDeps`.
-   */
-  def aspectjToolsClasspath: T[Agg[PathRef]] = T {
-    resolveDeps(aspectjToolsDeps)
   }
 
   /**
@@ -91,15 +83,8 @@ trait AspectjModule extends JavaModule {
   /**
    * List of ivy dependencies to be used as aspect path (`ajc -aspectpath`).
    */
-  def aspectIvyDeps: T[Agg[Dep]] = T {
+  override def aspectIvyDeps: T[Agg[Dep]] = T {
     Agg.empty[Dep]
-  }
-
-  /**
-   * Resolved version of `aspectIvyDeps`.
-   */
-  def resolvedAspectIvyDeps: T[Agg[PathRef]] = T {
-    resolveDeps(aspectIvyDeps, false)()
   }
 
   /**

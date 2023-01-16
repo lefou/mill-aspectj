@@ -28,7 +28,9 @@ object main extends AspectjModule {
 
   object test extends Tests {
     def javacOptions = Seq("-source", "1.8", "-target", "1.8")
-    def testFrameworks = Seq("com.novocode.junit.JUnitFramework")
+    // compatibility with older Mill versions
+    def testFrameworks: T[Seq[String]] = Seq(testFramework())
+    def testFramework: T[String] = "com.novocode.junit.JUnitFramework"
     def ivyDeps = Agg(
       ivy"com.novocode:junit-interface:0.11",
       ivy"de.tototec:de.tobiasroeser.lambdatest:0.7.0"
