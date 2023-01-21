@@ -2,7 +2,7 @@ package de.tobiasroeser.mill.aspectj
 
 import mill.{Agg, T}
 import mill.api.PathRef
-import mill.scalalib.{CoursierModule,Dep}
+import mill.scalalib.{CoursierModule, Dep}
 
 trait AspectjModulePlatform extends CoursierModule {
 
