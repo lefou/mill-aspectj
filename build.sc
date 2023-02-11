@@ -32,7 +32,7 @@ trait Deps {
 
 object Deps_0_11 extends Deps {
   override def millPlatform = millVersion // only valid for exact milestone versions
-  override def millVersion = "0.11.0-M3" // select only exact milestones
+  override def millVersion = "0.11.0-M4" // select only exact milestones
   override def scalaVersion = "2.13.10"
   override def itestVersions = Seq(millVersion)
 }
@@ -40,36 +40,25 @@ object Deps_0_10 extends Deps {
   override def millPlatform = "0.10"
   override def millVersion = "0.10.0" // scala-steward:off
   override def scalaVersion = "2.13.10"
-  override def itestVersions = Seq(millVersion)
+  override def itestVersions = Seq("0.10.11", millVersion)
 }
 object Deps_0_9 extends Deps {
   override def millPlatform = "0.9"
   override def millVersion = "0.9.3" // scala-steward:off
   override def scalaVersion = "2.13.10"
-  override def itestVersions = Seq(
-    "0.9.12",
-    "0.9.11",
-    "0.9.10",
-    "0.9.9",
-    "0.9.8",
-    "0.9.7",
-    "0.9.6",
-    "0.9.5",
-    "0.9.4",
-    millVersion
-  )
+  override def itestVersions = Seq("0.9.12", millVersion)
 }
 object Deps_0_7 extends Deps {
   override def millPlatform = "0.7"
   override def millVersion = "0.7.0" // scala-steward:offf
   override def scalaVersion = "2.13.10"
-  override def itestVersions = Seq("0.8.0", "0.7.3", "0.7.2", "0.7.1", millVersion)
+  override def itestVersions = Seq("0.8.0", "0.7.3", millVersion)
 }
 object Deps_0_6 extends Deps {
   override def millPlatform = "0.6"
   override def millVersion = "0.6.0" // scala-steward:off
   override def scalaVersion = "2.12.17"
-  override def itestVersions = Seq("0.6.3", "0.6.2", "0.6.1", millVersion)
+  override def itestVersions = Seq("0.6.3", millVersion)
 }
 
 val configs = Seq(Deps_0_11, Deps_0_10, Deps_0_9, Deps_0_7, Deps_0_6)
