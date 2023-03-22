@@ -189,7 +189,7 @@ class ItestCross(millVersion: String) extends MillIntegrationTestModule {
       val versionPrefix = millVersion.split("[.]").take(2).mkString(".")
       if (tc.path.last == "scala+ajc" && Seq("0.6", "0.7", "0.8", "0.9").contains(versionPrefix)) {
         T.log.errorStream.println(
-          s"Skipping test '${tc.path.last}' for Mill version ${mill.BuildInfo.millVersion} < 0.10.0"
+          s"Skipping test '${tc.path.last}' for Mill version ${mill.BuildInfo.millVersion} < 0.10.12"
         )
         false
       } else true
