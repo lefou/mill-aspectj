@@ -2,7 +2,7 @@ import mill._
 import mill.scalalib._
 import mill.define._
 
-import $exec.plugins
+import $file.plugins
 import de.tobiasroeser.mill.aspectj._
 
 import $ivy.`org.scalatest::scalatest:3.2.15`
