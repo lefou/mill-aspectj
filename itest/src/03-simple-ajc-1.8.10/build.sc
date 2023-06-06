@@ -1,8 +1,8 @@
-import mill._
+import mill.Agg
 import mill.scalalib._
-import mill.define._
+import mill.define.Command
 
-import $exec.plugins
+import $file.plugins
 import de.tobiasroeser.mill.aspectj._
 
 import $ivy.`org.scalatest::scalatest:3.2.16`
@@ -14,7 +14,7 @@ object main extends AspectjModule {
 
   def ajcOptions = Seq("-8")
 
-  object test extends Tests {
+  object test extends JavaModuleTests {
     // compatibility with older Mill versions
     def testFrameworks: T[Seq[String]] = Seq(testFramework())
     def testFramework: T[String] = "com.novocode.junit.JUnitFramework"

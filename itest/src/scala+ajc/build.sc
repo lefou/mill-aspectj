@@ -1,8 +1,8 @@
-import mill._
+import mill.Agg
 import mill.scalalib._
-import mill.define._
+import mill.define.Command
 
-import $exec.plugins
+import $file.plugins
 import de.tobiasroeser.mill.aspectj._
 
 import $ivy.`org.scalatest::scalatest:3.2.16`
@@ -10,14 +10,14 @@ import org.scalatest.Assertions
 
 object main extends ScalaModule with AspectjModule {
 
-  def scalaVersion = "2.13.10"
-  def aspectjVersion = "1.9.5"
+  def scalaVersion = "2.13.11"
+  def aspectjVersion = "1.9.7"
   def aspectjCompileMode = CompileMode.OnlyAjSources
 
   override def scalacOptions = Seq("-target:jvm-1.8")
   override def ajcOptions = Seq("-1.8")
 
-  object test extends Tests {
+  object test extends ScalaModuleTests {
     override def javacOptions = Seq("-source", "1.8", "-target", "1.8")
     override def scalacOptions = Seq("-target:jvm-1.8")
     // compatibility with older Mill versions
