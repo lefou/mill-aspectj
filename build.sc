@@ -10,6 +10,7 @@ import mill.scalalib.publish._
 import de.tobiasroeser.mill.integrationtest._
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 import os.Path
+import scala.util.Properties
 
 val baseDir = build.millSourcePath
 val rtMillVersion = build.version
@@ -43,21 +44,11 @@ object Deps_0_10 extends Deps {
 object Deps_0_9 extends Deps {
   override def millPlatform = "0.9"
   override def millVersion = "0.9.3" // scala-steward:off
-  override def itestVersions = Seq("0.9.12", millVersion)
-}
-object Deps_0_7 extends Deps {
-  override def millPlatform = "0.7"
-  override def millVersion = "0.7.0" // scala-steward:offf
-  override def itestVersions = Seq("0.8.0", "0.7.3", millVersion)
-}
-object Deps_0_6 extends Deps {
-  override def millPlatform = "0.6"
-  override def millVersion = "0.6.0" // scala-steward:off
-  override def scalaVersion = "2.12.18"
-  override def itestVersions = Seq("0.6.3", millVersion)
+  // 0.9.5 is the first version that has inner `JavaModule.JavaModuleTests` traits
+  override def itestVersions = Seq("0.9.12", "0.9.5")
 }
 
-val configs = Seq(Deps_0_11, Deps_0_10, Deps_0_9, Deps_0_7, Deps_0_6)
+val configs = Seq(Deps_0_11, Deps_0_10, Deps_0_9)
 val matrix = configs.map(d => d.millPlatform -> d).toMap
 val testMatrix = configs.flatMap(d => d.itestVersions.map(_ -> d)).toMap
 
@@ -67,7 +58,7 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
   def crossScalaVersion = deps.scalaVersion
   override def sources: Sources = T.sources(
     millSourcePath / "src",
-    if (Seq(Deps_0_6, Deps_0_7, Deps_0_9, Deps_0_10).forall(d => d.millPlatform != millPlatform))
+    if (Seq(Deps_0_9, Deps_0_10).forall(d => d.millPlatform != millPlatform))
       millSourcePath / s"src-${millPlatform.split("[.]").take(2).mkString(".")}"
     else
       millSourcePath / s"src-0.10-"
@@ -80,7 +71,12 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
   override def artifactSuffix = s"_mill${millPlatform}_${artifactScalaVersion()}"
   override def publishVersion: T[String] = VcsVersion.vcsState().format()
 
-  override def javacOptions = Seq("-source", "1.8", "-target", "1.8")
+  override def javacOptions = {
+    (if (Properties.isJavaAtLeast(8)) Seq("-release", "8")
+    else Seq("-source", "1.8", "-target", "1.8")) ++
+      Seq("-encoding", "UTF-8", "-deprecation")
+  }
+
   override def scalacOptions = Seq("-target:jvm-1.8")
 
   def pomSettings = T {
