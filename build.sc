@@ -33,7 +33,7 @@ trait Deps {
 
 object Deps_0_11 extends Deps {
   override def millPlatform = millVersion // only valid for exact milestone versions
-  override def millVersion = "0.11.0-M11" // select only exact milestones
+  override def millVersion = "0.11.0" // select only exact milestones
   override def itestVersions = Seq(millVersion)
 }
 object Deps_0_10 extends Deps {
@@ -73,7 +73,7 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
 
   override def javacOptions = {
     (if (Properties.isJavaAtLeast(8)) Seq("-release", "8")
-    else Seq("-source", "1.8", "-target", "1.8")) ++
+     else Seq("-source", "1.8", "-target", "1.8")) ++
       Seq("-encoding", "UTF-8", "-deprecation")
   }
 
