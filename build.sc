@@ -1,6 +1,6 @@
 // plugins
 import $ivy.`de.tototec::de.tobiasroeser.mill.integrationtest::0.7.0`
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.1`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
 
 // imports
 import mill._
@@ -73,7 +73,7 @@ trait MillAjcModule extends CrossScalaModule with PublishModule {
 
   override def javacOptions = {
     (if (Properties.isJavaAtLeast(8)) Seq("-release", "8")
-    else Seq("-source", "1.8", "-target", "1.8")) ++
+     else Seq("-source", "1.8", "-target", "1.8")) ++
       Seq("-encoding", "UTF-8", "-deprecation")
   }
 
