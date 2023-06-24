@@ -1,4 +1,4 @@
-import mill.Agg
+import mill._
 import mill.scalalib._
 import mill.define.Command
 
