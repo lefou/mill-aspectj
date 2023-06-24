@@ -4,7 +4,7 @@ import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
 
 // imports
 import mill._
-import mill.define.{Command, Module, Sources, Target, TaskModule}
+import mill.define.{Command, Module, Sources, TaskModule}
 import mill.scalalib._
 import mill.scalalib.publish._
 import de.tobiasroeser.mill.integrationtest._
@@ -32,14 +32,14 @@ trait Deps {
 }
 
 object Deps_0_11 extends Deps {
-  override def millPlatform = millVersion // only valid for exact milestone versions
-  override def millVersion = "0.11.0-M11" // select only exact milestones
-  override def itestVersions = Seq(millVersion)
+  override def millPlatform = "0.11"
+  override def millVersion = "0.11.0" // scala-steward:off
+  override def itestVersions = Seq("0.11.1", millVersion)
 }
 object Deps_0_10 extends Deps {
   override def millPlatform = "0.10"
   override def millVersion = "0.10.0" // scala-steward:off
-  override def itestVersions = Seq("0.10.11", millVersion)
+  override def itestVersions = Seq("0.10.12", millVersion)
 }
 object Deps_0_9 extends Deps {
   override def millPlatform = "0.9"

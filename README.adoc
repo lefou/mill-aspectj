@@ -5,7 +5,7 @@
 :minimal-mill-version: 0.9.3
 :example-aspectj-version: 1.9.7
 :example-scala-version: 2.13.11
-:example-mill-platform-version: 0.10
+:example-mill-platform-version: 0.11
 :toc:
 :toc-placement: preamble
 
