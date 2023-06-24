@@ -1,6 +1,6 @@
 
 = mill-aspectj - AspectJ compiler support for mill
-:version: 0.4.0
+:version: 0.5.0
 :projectHome: https://github.com/lefou/mill-aspectj
 :minimal-mill-version: 0.9.3
 :example-aspectj-version: 1.9.7
@@ -136,7 +136,7 @@ The following table shows a matrix of compatible mill and mill-aspectj versions.
 [options="header"]
 |===
 | mill-aspectj | mill
-| _{main}_ | 0.6.0 - 0.10.0
+| 0.5.0 | 0.9.0 - 0.11.x
 | 0.4.0 | 0.6.0 - 0.10.x
 | 0.3.2 | 0.6.0 - 0.10.x
 | 0.3.1 | 0.6.0 - 0.8.0
@@ -157,17 +157,6 @@ If you need support for other versions, please create an {projectHome}/issues[is
 You can download binary releases from https://search.maven.org/artifact/de.tototec/de.tobiasroeser.mill.aspectj_mill{example-mill-platform-version}_2.13[Maven Central].
 
 Please make sure to use the correct _mill platform suffix_ matching your used mill version.
-
-.Mill Platform suffix
-[options="header"]
-|===
-| mill version  | mill platform | suffix | example
-| 0.10.x        | 0.10 | `_mill0.10` | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj::{version}````
-| 0.9.3 - 0.9.x | 0.9  | `_mill0.9`  | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.9:{version}````
-| 0.7.0 - 0.8.0 | 0.7  | `_mill0.7`  | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.7:{version}````
-| 0.6.0 - 0.6.3 | 0.6  | `_mill0.6`  | ```import $ivy.`de.tototec::de.tobiasroeser.mill.aspectj_mill0.6:{version}````
-|===
-
 
 == License
 
@@ -204,11 +193,14 @@ You can also ask question and join our discussion at the {projectHome}/discussio
 
 == Changelog
 
-=== {main}
-:version: main
+=== 0.5.0 - 2023-06-24
+:version: 0.4.1
 :prev-version: 0.4.0
 :github-milestone: 5
 
+* Support Mill 0.11 API
+* Dropped support for Mill versions older than `0.9`
+* Tooling and Dependency updates
 
 _See
 ifeval::["{github-milestone}" != ""]
