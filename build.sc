@@ -4,7 +4,7 @@ import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
 
 // imports
 import mill._
-import mill.define.{Cross, Module, TaskModule}
+import mill.define.{Cross, Module}
 import mill.scalalib._
 import mill.scalalib.publish._
 import de.tobiasroeser.mill.integrationtest._
