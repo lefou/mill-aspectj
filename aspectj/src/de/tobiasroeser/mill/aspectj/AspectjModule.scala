@@ -163,5 +163,3 @@ trait AspectjModule extends JavaModule with AspectjModulePlatform {
   }
 
 }
-
-
