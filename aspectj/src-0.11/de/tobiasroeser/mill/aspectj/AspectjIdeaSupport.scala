@@ -91,5 +91,3 @@ trait AspectjIdeaSupport extends AspectjModule {
   }
 
 }
-
-
