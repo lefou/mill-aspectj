@@ -18,13 +18,13 @@ trait Deps {
   def scalaVersion: String = "2.13.12"
   def itestVersions: Seq[String]
 
-  val aspectjTools = ivy"org.aspectj:aspectjtools:1.9.5"
+  val aspectjTools = ivy"org.aspectj:aspectjtools:1.9.20.1"
   val logbackClassic = ivy"ch.qos.logback:logback-classic:1.1.3"
   val millMain = ivy"com.lihaoyi::mill-main:${millVersion}"
   val millMainApi = ivy"com.lihaoyi::mill-main-api:${millVersion}"
   val millScalalib = ivy"com.lihaoyi::mill-scalalib:${millVersion}"
   val millScalalibApi = ivy"com.lihaoyi::mill-scalalib-api:${millVersion}"
-  val scalaTest = ivy"org.scalatest::scalatest:3.2.16"
+  val scalaTest = ivy"org.scalatest::scalatest:3.2.17"
   val slf4j = ivy"org.slf4j:slf4j-api:1.7.25"
 }
 
