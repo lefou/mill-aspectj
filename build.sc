@@ -15,7 +15,7 @@ import scala.util.Properties
 trait Deps {
   def millPlatform: String
   def millVersion: String
-  def scalaVersion: String = "2.13.12"
+  def scalaVersion: String = "2.13.13"
   def itestVersions: Seq[String]
 
   val aspectjTools = ivy"org.aspectj:aspectjtools:1.9.21"
