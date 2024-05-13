@@ -10,7 +10,7 @@ import org.scalatest.Assertions
 
 object main extends ScalaModule with AspectjModule {
 
-  def scalaVersion = "2.13.13"
+  def scalaVersion = "2.13.14"
   def aspectjVersion = "1.9.7"
   def aspectjCompileMode = CompileMode.OnlyAjSources
 
