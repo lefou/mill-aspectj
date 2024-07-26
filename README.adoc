@@ -194,7 +194,7 @@ You can also ask question and join our discussion at the {projectHome}/discussio
 == Changelog
 
 === 0.5.0 - 2023-06-24
-:version: 0.4.1
+:version: 0.5.0
 :prev-version: 0.4.0
 :github-milestone: 5
 
