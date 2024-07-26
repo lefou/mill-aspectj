@@ -52,10 +52,22 @@ The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following 
   The AspectJ version. _Required_.
   For a list of available releases refer to the https://www.eclipse.org/aspectj/downloads.php[AspectJ Download Page].
 
+`def aspectjCompileMode: CompileMode`::
++
+--
+Configures want kind of sources the `ajc` compiler is processing.
+
+`CompileMode.FullSources` (_default_):: Compile all source files (`+*.java+` and `+*.aj+`).
+`CompileMode.OnlyAjSources`::
+  Only compile `+*.aj+` files but weave-compile all other classes given via `-inpath`. This setup requires another compiler to compile the Java (and other) source files to `.class` files.
+  If you don't mix-in other compiler modules before `AspectJModule`, Zinc as configured by the `JavaModule` will be used.
+
+--
+
 `def ivyDeps: T[Agg[Dep]]`::
   The compile and runtime dependencies.
   Contains by default the `aspectjrt.jar` which is resolved via ivy (`ivy"org.aspectj:aspectjrt:${aspectjVersion()}"`).
-  If you do do not use `super.ivyDeps()` when overriding this def, you need to provide the `aspectjrt.jar` manually.
+  If you do not use `super.ivyDeps()` when overriding this def, you need to provide the `aspectjrt.jar` manually.
 
 `def aspectjToolsDeps: T[Agg[Dep]]`::
   The ivy dependencies representing the aspectj compiler classes, which is typically a `aspectjtools.jar`.
@@ -63,7 +75,7 @@ The module trait `de.tobiasroeser.mill.aspectj.AspectjModule` has the following 
 
 `def aspectjToolsClasspath: T[Agg[PathRef]]`::
   The aspectj compiler classpath.
-  By default resolved from `aspectjToolsDeps`.
+  By default, resolved from `aspectjToolsDeps`.
 
 `def ajcOptions: T[Seq[String]]`::
   Additional options to be used by `ajc` in the `compile` target.
