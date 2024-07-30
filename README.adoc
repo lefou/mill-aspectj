@@ -9,10 +9,6 @@
 :toc:
 :toc-placement: preamble
 
-ifdef::env-github[]
-image:https://github.com/lefou/mill-aspectj/workflows/.github/workflows/build.yml/badge.svg["GitHub Actions Build Status", link="https://github.com/lefou/mill-aspectj/actions"]
-endif::[]
-
 Documentation for mill-aspectj, a mill plugin to support the https://github.com/eclipse/org.aspectj[AspectJ language and compiler].
 
 == Quickstart
